@@ -1,0 +1,195 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Araruama: Guardião da História - HARD</title>
+    <style>
+        :root { --gold: #f4d03f; --danger: #ff4757; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; touch-action: none; }
+        #ui { position: absolute; top: 10px; left: 10px; color: white; z-index: 10; pointer-events: none; }
+        #stats { display: flex; gap: 10px; background: rgba(0,0,0,0.8); padding: 12px; border-radius: 12px; border: 2px solid var(--gold); }
+        .label { color: var(--gold); font-size: 0.7rem; display: block; text-transform: uppercase; }
+        .val { font-size: 1rem; font-weight: bold; }
+        .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.9); z-index: 100; }
+        .card { background: white; color: #333; width: 90%; max-width: 420px; border-radius: 20px; overflow: hidden; text-align: center; border: 4px solid var(--gold); }
+        .card-header { background: #2d5a27; color: white; padding: 15px; font-size: 1.2rem; }
+        .card-body { padding: 20px; }
+        .quiz-options { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .opt-btn { background: #f1f2f6; border: 2px solid #dfe4ea; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .btn-main { background: #2d5a27; color: white; padding: 15px; border: none; border-radius: 40px; font-weight: bold; cursor: pointer; width: 100%; }
+        #damage-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,0,0,0.3); display:none; pointer-events:none; z-index:5; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+
+<div id="damage-overlay"></div>
+<div id="ui">
+    <div id="stats">
+        <div><span class="label">NÍVEL</span><span id="txt-lv" class="val">1 / 9</span></div>
+        <div><span class="label">META</span><span id="txt-target" class="val">0 / 10</span></div>
+        <div><span class="label">LOCAL</span><span id="txt-loc" class="val">-</span></div>
+    </div>
+</div>
+
+<div id="modal" class="modal">
+    <div class="card">
+        <div class="card-header"><h3 id="m-title" style="margin:0"></h3></div>
+        <div class="card-body">
+            <p id="m-text"></p>
+            <button class="btn-main" onclick="startLevel()">INICIAR DESAFIO</button>
+        </div>
+    </div>
+</div>
+
+<div id="quiz-modal" class="modal" style="display:none">
+    <div class="card">
+        <div class="card-header">🧩 QUIZ DO GUARDIÃO</div>
+        <div class="card-body">
+            <p id="q-question" style="font-weight:bold; font-size: 1.1rem;"></p>
+            <div id="q-options" class="quiz-options"></div>
+        </div>
+    </div>
+</div>
+
+<canvas id="game"></canvas>
+
+<script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(f, t, d) {
+        try {
+            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+            o.type = t; o.frequency.value = f; g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+d);
+        } catch(e){}
+    }
+
+    let level = 0, score = 0, gameActive = false;
+    let player = { x: 0, y: 0 }; let items = [];
+
+    const campaign = [
+        { title: "1. Sambaquis", loc: "Centro", info: "Araruama: 'Lugar de conchas'. Desvie dos caranguejos!", icon: "🐚", enemy: "🦀", bg: "#87CEEB", gr: "#f4d03f", q: "Significado de Araruama?", opts: ["Terra do Fogo", "Abundância de conchas", "Rio Salgado"], ans: 1 },
+        { title: "2. Tupinambás", loc: "Aldeia", info: "Navegue com os Tamoios. Cuidado com o fogo!", icon: "🛶", enemy: "🔥", bg: "#2d5a27", gr: "#8b4513", q: "Habitantes originais?", opts: ["Tupinambás", "Incas", "Maias"], ans: 0 },
+        { title: "3. Conflito 1575", loc: "Batalha", info: "Sobreviva ao massacre de Salema. Desvie das bombas!", icon: "🏹", enemy: "💣", bg: "#4a4a4a", gr: "#333", q: "Quem liderou o ataque em 1575?", opts: ["Cabral", "Antônio Salema", "D. Pedro"], ans: 1 },
+        { title: "4. Salinas", loc: "Laguna", info: "O Ouro Branco! Não pegue o lixo da laguna.", icon: "💎", enemy: "🗑️", bg: "#0077be", gr: "#fff", q: "Como chamam o sal local?", opts: ["Ouro Branco", "Prata", "Cristal Doce"], ans: 0 },
+        { title: "5. Moinhos", loc: "Orla", info: "Símbolo da cidade. Fuja das tempestades!", icon: "🌀", enemy: "⛈️", bg: "#3498db", gr: "#eee", q: "Função dos moinhos?", opts: ["Gerar luz", "Bombear água salgada", "Turismo apenas"], ans: 1 },
+        { title: "6. São Vicente", loc: "Zona Rural", info: "Café e agricultura. Cuidado com as pragas!", icon: "☕", enemy: "🐛", bg: "#5d4037", gr: "#3e2723", q: "Vocação de São Vicente?", opts: ["Pesca", "Agricultura", "Shopping"], ans: 1 },
+        { title: "7. Praia Seca", loc: "Restinga", info: "Paraíso do surf. Cuidado com os tubarões!", icon: "🏄", enemy: "🦈", bg: "#00bcd4", gr: "#ffeb3b", q: "Onde fica Praia Seca?", opts: ["No Morro", "Na Restinga", "Na Lagoa Doce"], ans: 1 },
+        { title: "8. Juturnaíba", loc: "Água Doce", info: "Nossa reserva de vida. Fuja dos jacarés!", icon: "💧", enemy: "🐊", bg: "#1b4d3e", gr: "#4b3621", q: "Tipo de água de Juturnaíba?", opts: ["Salgada", "Doce", "Poluída"], ans: 1 },
+        { title: "9. Liberdade", loc: "Câmara", info: "6 de Fevereiro de 1859. O cadeado impede a união!", icon: "📜", enemy: "🔒", bg: "#1a2a6c", gr: "#2d5a27", q: "Dia da Emancipação?", opts: ["1 de Janeiro", "6 de Fevereiro", "13 de Maio"], ans: 1 }
+    ];
+
+    function updateModal() {
+        const c = campaign[level];
+        document.getElementById('m-title').innerText = c.title;
+        document.getElementById('m-text').innerText = c.info;
+        document.getElementById('modal').style.display = 'flex';
+    }
+
+    function startLevel() {
+        document.getElementById('modal').style.display = 'none';
+        score = 0; items = []; 
+        // Cria 12 itens (mais inimigos que o normal)
+        for(let i=0; i<12; i++) spawn(true);
+        gameActive = true; updateUI(); if(level === 0) loop();
+    }
+
+    function spawn(init = false) {
+        // 70% de chance de ser inimigo nos níveis altos
+        const isGood = Math.random() > (0.4 + (level * 0.03));
+        items.push({ 
+            x: Math.random() * canvas.width, 
+            y: init ? (Math.random() * -canvas.height) : -50, 
+            isG: isGood, 
+            s: (2 + (level * 0.5)) + Math.random() * 2,
+            swing: Math.random() * 0.05
+        });
+    }
+
+    function updateUI() {
+        const c = campaign[level];
+        document.getElementById('txt-lv').innerText = `${level + 1} / 9`;
+        document.getElementById('txt-target').innerText = `${score} / 10`;
+        document.getElementById('txt-loc').innerText = c.loc;
+    }
+
+    function triggerDamage() {
+        const ov = document.getElementById('damage-overlay');
+        ov.style.display = 'block';
+        setTimeout(() => ov.style.display = 'none', 150);
+    }
+
+    function showQuiz() {
+        gameActive = false; const c = campaign[level];
+        document.getElementById('q-question').innerText = c.q;
+        const div = document.getElementById('q-options'); div.innerHTML = "";
+        c.opts.forEach((o, i) => {
+            const b = document.createElement('button'); b.className = "opt-btn"; b.innerText = o;
+            b.onclick = () => {
+                if(i === c.ans) { 
+                    playSound(800,'sine',0.3); level++; 
+                    if(level < 9) updateModal(); else alert("VOCÊ É O MAIOR CONHECEDOR DE ARARUAMA!"); 
+                } else { 
+                    playSound(100,'square',0.5); alert("ERROU! O tempo voltou e você deve refazer o nível."); 
+                    score = 0; startLevel(); 
+                }
+                document.getElementById('quiz-modal').style.display = 'none';
+            };
+            div.appendChild(b);
+        });
+        document.getElementById('quiz-modal').style.display = 'flex';
+    }
+
+    function loop() {
+        if(gameActive) {
+            const c = campaign[level];
+            ctx.fillStyle = c.bg; ctx.fillRect(0,0,canvas.width, canvas.height);
+            ctx.fillStyle = c.gr; ctx.fillRect(0, canvas.height*0.85, canvas.width, canvas.height*0.15);
+            
+            // Jogador
+            ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(player.x, player.y, 25, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle = "gold"; ctx.lineWidth = 3; ctx.stroke();
+            
+            items.forEach((it, i) => {
+                it.y += it.s;
+                it.x += Math.sin(it.y * it.swing) * 2; // Movimento em zigue-zague
+
+                if(it.y > canvas.height) { items.splice(i,1); spawn(); }
+
+                ctx.font = "38px Arial"; ctx.textAlign = "center";
+                ctx.fillText(it.isG ? c.icon : c.enemy, it.x, it.y);
+
+                if(Math.hypot(player.x-it.x, player.y-it.y) < 40) {
+                    if(it.isG) { 
+                        score++; playSound(600,'sine',0.1); 
+                    } else { 
+                        score = Math.max(0, score - 3); 
+                        playSound(150,'sawtooth',0.3); 
+                        triggerDamage();
+                    }
+                    items.splice(i, 1); spawn(); updateUI();
+                    if(score >= 10) showQuiz();
+                }
+            });
+        }
+        requestAnimationFrame(loop);
+    }
+
+    const mv = (e) => { 
+        player.x = e.touches ? e.touches[0].clientX : e.clientX; 
+        player.y = e.touches ? e.touches[0].clientY : e.clientY; 
+        if(e.touches) e.preventDefault(); 
+    };
+    window.addEventListener('touchmove', mv, {passive:false});
+    window.addEventListener('mousemove', mv);
+    window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    player = { x: canvas.width/2, y: canvas.height/2 };
+    updateModal();
+</script>
+</body>
+</html>
