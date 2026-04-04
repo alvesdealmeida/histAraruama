@@ -5,21 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Araruama: Guardião da História - HARD</title>
     <style>
-        :root { --gold: #f4d03f; --danger: #ff4757; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; touch-action: none; }
+        :root { --gold: #f4d03f; --danger: #ff4757; --deep-green: #1b4d3e; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; touch-action: none; }
+        
+        /* UI de Jogo */
         #ui { position: absolute; top: 10px; left: 10px; color: white; z-index: 10; pointer-events: none; }
         #stats { display: flex; gap: 10px; background: rgba(0,0,0,0.8); padding: 12px; border-radius: 12px; border: 2px solid var(--gold); }
-        .label { color: var(--gold); font-size: 0.7rem; display: block; text-transform: uppercase; }
+        .label { color: var(--gold); font-size: 0.7rem; display: block; text-transform: uppercase; letter-spacing: 1px; }
         .val { font-size: 1rem; font-weight: bold; }
-        .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.9); z-index: 100; }
-        .card { background: white; color: #333; width: 90%; max-width: 420px; border-radius: 20px; overflow: hidden; text-align: center; border: 4px solid var(--gold); }
-        .card-header { background: #2d5a27; color: white; padding: 15px; font-size: 1.2rem; }
-        .card-body { padding: 20px; }
+
+        /* Estilização da Tela Inicial e Modais */
+        .modal { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            display: flex; align-items: center; justify-content: center; 
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); /* Degradê Cinematográfico */
+            z-index: 100; 
+        }
+
+        .card { 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(10px); /* Efeito de Vidro */
+            color: #333; width: 90%; max-width: 420px; border-radius: 25px; 
+            overflow: hidden; text-align: center; border: 4px solid var(--gold); 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .card-header { background: var(--deep-green); color: white; padding: 20px; font-size: 1.3rem; font-weight: bold; }
+        .card-body { padding: 30px; }
+        
         .quiz-options { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-        .opt-btn { background: #f1f2f6; border: 2px solid #dfe4ea; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; }
-        .btn-main { background: #2d5a27; color: white; padding: 15px; border: none; border-radius: 40px; font-weight: bold; cursor: pointer; width: 100%; }
+        .opt-btn { background: #f1f2f6; border: 2px solid #dfe4ea; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .opt-btn:hover { background: var(--gold); }
+
+        .btn-main { 
+            background: var(--deep-green); color: white; padding: 18px; border: none; 
+            border-radius: 50px; font-weight: bold; cursor: pointer; width: 100%; 
+            font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
         #damage-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,0,0,0.3); display:none; pointer-events:none; z-index:5; }
         canvas { display: block; }
+
+        .icon-intro { font-size: 4rem; margin-bottom: 10px; display: block; }
     </style>
 </head>
 <body>
@@ -33,21 +67,25 @@
     </div>
 </div>
 
+<!-- Modal Principal (Início e Transição) -->
 <div id="modal" class="modal">
     <div class="card">
-        <div class="card-header"><h3 id="m-title" style="margin:0"></h3></div>
+        <div class="card-header"><span id="m-title"></span></div>
         <div class="card-body">
-            <p id="m-text"></p>
-            <button class="btn-main" onclick="startLevel()">INICIAR DESAFIO</button>
+            <span class="icon-intro" id="m-icon">🏛️</span>
+            <p id="m-text" style="font-size: 1.1rem; line-height: 1.5; color: #555; margin-bottom: 25px;"></p>
+            <button class="btn-main" onclick="startLevel()">Iniciar Jornada</button>
+            <p style="font-size: 0.7rem; color: #999; margin-top: 15px;">Mova o dedo ou mouse para coletar itens e desviar de perigos.</p>
         </div>
     </div>
 </div>
 
+<!-- Modal do Quiz -->
 <div id="quiz-modal" class="modal" style="display:none">
     <div class="card">
-        <div class="card-header">🧩 QUIZ DO GUARDIÃO</div>
+        <div class="card-header">🧩 DESAFIO DO CONHECIMENTO</div>
         <div class="card-body">
-            <p id="q-question" style="font-weight:bold; font-size: 1.1rem;"></p>
+            <p id="q-question" style="font-weight:bold; font-size: 1.2rem; margin-bottom: 20px;"></p>
             <div id="q-options" class="quiz-options"></div>
         </div>
     </div>
@@ -72,20 +110,30 @@
     let player = { x: 0, y: 0 }; let items = [];
 
     const campaign = [
-        { title: "1. Sambaquis", loc: "Centro", info: "Araruama: 'Lugar de conchas'. Desvie dos caranguejos!", icon: "🐚", enemy: "🦀", bg: "#87CEEB", gr: "#f4d03f", q: "Significado de Araruama?", opts: ["Terra do Fogo", "Abundância de conchas", "Rio Salgado"], ans: 1 },
-        { title: "2. Tupinambás", loc: "Aldeia", info: "Navegue com os Tamoios. Cuidado com o fogo!", icon: "🛶", enemy: "🔥", bg: "#2d5a27", gr: "#8b4513", q: "Habitantes originais?", opts: ["Tupinambás", "Incas", "Maias"], ans: 0 },
-        { title: "3. Conflito 1575", loc: "Batalha", info: "Sobreviva ao massacre de Salema. Desvie das bombas!", icon: "🏹", enemy: "💣", bg: "#4a4a4a", gr: "#333", q: "Quem liderou o ataque em 1575?", opts: ["Cabral", "Antônio Salema", "D. Pedro"], ans: 1 },
-        { title: "4. Salinas", loc: "Laguna", info: "O Ouro Branco! Não pegue o lixo da laguna.", icon: "💎", enemy: "🗑️", bg: "#0077be", gr: "#fff", q: "Como chamam o sal local?", opts: ["Ouro Branco", "Prata", "Cristal Doce"], ans: 0 },
-        { title: "5. Moinhos", loc: "Orla", info: "Símbolo da cidade. Fuja das tempestades!", icon: "🌀", enemy: "⛈️", bg: "#3498db", gr: "#eee", q: "Função dos moinhos?", opts: ["Gerar luz", "Bombear água salgada", "Turismo apenas"], ans: 1 },
-        { title: "6. São Vicente", loc: "Zona Rural", info: "Café e agricultura. Cuidado com as pragas!", icon: "☕", enemy: "🐛", bg: "#5d4037", gr: "#3e2723", q: "Vocação de São Vicente?", opts: ["Pesca", "Agricultura", "Shopping"], ans: 1 },
-        { title: "7. Praia Seca", loc: "Restinga", info: "Paraíso do surf. Cuidado com os tubarões!", icon: "🏄", enemy: "🦈", bg: "#00bcd4", gr: "#ffeb3b", q: "Onde fica Praia Seca?", opts: ["No Morro", "Na Restinga", "Na Lagoa Doce"], ans: 1 },
-        { title: "8. Juturnaíba", loc: "Água Doce", info: "Nossa reserva de vida. Fuja dos jacarés!", icon: "💧", enemy: "🐊", bg: "#1b4d3e", gr: "#4b3621", q: "Tipo de água de Juturnaíba?", opts: ["Salgada", "Doce", "Poluída"], ans: 1 },
-        { title: "9. Liberdade", loc: "Câmara", info: "6 de Fevereiro de 1859. O cadeado impede a união!", icon: "📜", enemy: "🔒", bg: "#1a2a6c", gr: "#2d5a27", q: "Dia da Emancipação?", opts: ["1 de Janeiro", "6 de Fevereiro", "13 de Maio"], ans: 1 }
+        { title: "OS SAMBAQUIS", loc: "Centro", info: "Araruama significa 'Lugar de conchas'. Proteja os vestígios milenares e desvie dos caranguejos!", icon: "🐚", enemy: "🦀", bg: "#87CEEB", gr: "#f4d03f", q: "Qual o significado tupi de Araruama?", opts: ["Terra do Fogo", "Abundância de conchas", "Rio Salgado"], ans: 1 },
+        { title: "A ALDEIA TUPINAMBÁ", loc: "Aldeia", info: "Navegue com os Tamoios pela laguna original. Cuidado com as fogueiras de guerra!", icon: "🛶", enemy: "🔥", bg: "#2d5a27", gr: "#8b4513", q: "Quem eram os habitantes originais da região?", opts: ["Tupinambás", "Incas", "Astecas"], ans: 0 },
+        { title: "BATALHA DE 1575", loc: "Batalha", info: "O cerco à Aldeia de Araruama. Sobreviva ao ataque das tropas de Antônio Salema!", icon: "🏹", enemy: "💣", bg: "#4a4a4a", gr: "#333", q: "Quem liderou o ataque português em 1575?", opts: ["Cabral", "Antônio Salema", "D. Pedro I"], ans: 1 },
+        { title: "CICLO DO SAL", loc: "Laguna", info: "O Ouro Branco impulsionou nossa economia. Não deixe o lixo poluir nossa riqueza!", icon: "💎", enemy: "🗑️", bg: "#0077be", gr: "#fff", q: "Como o sal era conhecido no auge da produção?", opts: ["Ouro Branco", "Prata da Terra", "Cristal Doce"], ans: 0 },
+        { title: "OS MOINHOS DE VENTO", loc: "Orla", info: "Símbolos da nossa paisagem. Fuja das tempestades que assolam a orla!", icon: "🌀", enemy: "⛈️", bg: "#3498db", gr: "#eee", q: "Qual era a função original dos moinhos?", opts: ["Gerar eletricidade", "Bombear água salgada", "Apenas decoração"], ans: 1 },
+        { title: "CAFÉ EM SÃO VICENTE", loc: "Zona Rural", info: "A riqueza vinha da terra. Proteja as sacas de café das pragas famintas!", icon: "☕", enemy: "🐛", bg: "#5d4037", gr: "#3e2723", q: "Qual o distrito famoso pela vocação agrícola?", opts: ["Iguabinha", "São Vicente", "Parati"], ans: 1 },
+        { title: "RESTINGA DE PRAIA SECA", loc: "Praia Seca", info: "O paraíso entre o mar e a lagoa. Cuidado com as correntes e predadores!", icon: "🏄", enemy: "🦈", bg: "#00bcd4", gr: "#ffeb3b", q: "Onde se localiza o distrito de Praia Seca?", opts: ["No Morro", "Na Restinga", "No Centro"], ans: 1 },
+        { title: "LAGOA DE JUTURNAÍBA", loc: "Água Doce", info: "Nossa maior reserva de água doce. Fuja dos jacarés da reserva!", icon: "💧", enemy: "🐊", bg: "#1b4d3e", gr: "#4b3621", q: "Juturnaíba é uma importante reserva de:", opts: ["Sal", "Água Doce", "Petróleo"], ans: 1 },
+        { title: "A EMANCIPAÇÃO", loc: "Câmara", info: "6 de Fevereiro de 1859. O cadeado da submissão deve ser destruído!", icon: "📜", enemy: "🔒", bg: "#1a2a6c", gr: "#2d5a27", q: "Em que dia se comemora a emancipação da cidade?", opts: ["1 de Janeiro", "6 de Fevereiro", "13 de Maio"], ans: 1 }
     ];
 
     function updateModal() {
         const c = campaign[level];
-        document.getElementById('m-title').innerText = c.title;
+        const titleEl = document.getElementById('m-title');
+        const iconEl = document.getElementById('m-icon');
+
+        if(level === 0) {
+            titleEl.innerText = "GUARDIÃO DE ARARUAMA";
+            iconEl.innerText = "🛡️";
+        } else {
+            titleEl.innerText = c.title;
+            iconEl.innerText = c.icon;
+        }
+        
         document.getElementById('m-text').innerText = c.info;
         document.getElementById('modal').style.display = 'flex';
         updateUI();
@@ -135,11 +183,11 @@
                     if(level < 9) {
                         updateModal(); 
                     } else {
-                        alert("PARABÉNS! VOCÊ É O MAIOR CONHECEDOR DE ARARUAMA!"); 
+                        alert("PARABÉNS! VOCÊ RESTAUROU A HISTÓRIA DE ARARUAMA!"); 
                         level = 0; score = 0; gameActive = false; updateModal();
                     }
                 } else { 
-                    playSound(100,'square',0.5); alert("ERROU! O tempo voltou e você deve refazer o nível."); 
+                    playSound(100,'square',0.5); alert("RESPOSTA INCORRETA! O fluxo do tempo foi interrompido. Tente novamente o nível."); 
                     score = 0; startLevel(); 
                 }
             };
@@ -154,8 +202,9 @@
             ctx.fillStyle = c.bg; ctx.fillRect(0,0,canvas.width, canvas.height);
             ctx.fillStyle = c.gr; ctx.fillRect(0, canvas.height*0.85, canvas.width, canvas.height*0.15);
             
+            // Jogador (Guardião)
             ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(player.x, player.y, 25, 0, Math.PI*2); ctx.fill();
-            ctx.strokeStyle = "gold"; ctx.lineWidth = 3; ctx.stroke();
+            ctx.strokeStyle = "gold"; ctx.lineWidth = 4; ctx.stroke();
             
             items.forEach((it, i) => {
                 it.y += it.s;
