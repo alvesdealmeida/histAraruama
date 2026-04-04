@@ -129,7 +129,6 @@
         const div = document.getElementById('q-options'); div.innerHTML = "";
         c.opts.forEach((o, i) => {
             const b = document.createElement('button'); b.className = "opt-btn"; b.innerText = o;
-            /*
             b.onclick = () => {
                 if(i === c.ans) { 
                     playSound(800,'sine',0.3); level++; 
@@ -140,42 +139,15 @@
                 }
                 document.getElementById('quiz-modal').style.display = 'none';
             };
-            */
-            b.onclick = () => {
-    if(i === c.ans) { 
-        playSound(800,'sine',0.3); 
-        level++; 
-        document.getElementById('quiz-modal').style.display = 'none';
-
-        if(level < 9) {
-            // Continua para o próximo nível
-            updateModal(); 
-        } else {
-            // FIM DO JOGO: Vitória Total
-            alert("PARABÉNS! VOCÊ É O MAIOR CONHECEDOR DE ARARUAMA!");
-            // Reset completo para não congelar
-            level = 0;
-            score = 0;
-            gameActive = false;
-            updateModal(); // Volta para o modal inicial do nível 1
-        }
-    } else { 
-        // Errou o Quiz
-        playSound(100,'square',0.5); 
-        alert("ERROU! O tempo voltou e você deve refazer o nível."); 
-        score = 0; 
-        document.getElementById('quiz-modal').style.display = 'none';
-        startLevel(); 
-    }
-};
+            
+ 
             div.appendChild(b);
         });
         document.getElementById('quiz-modal').style.display = 'flex';
     }
 
     function loop() {
-        if(gameActive && level < 9) { // Adicionada a trava "level < 9"
-            const c = campaign[level];
+        
         if(gameActive) {
             const c = campaign[level];
             ctx.fillStyle = c.bg; ctx.fillRect(0,0,canvas.width, canvas.height);
