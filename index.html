@@ -88,18 +88,17 @@
         document.getElementById('m-title').innerText = c.title;
         document.getElementById('m-text').innerText = c.info;
         document.getElementById('modal').style.display = 'flex';
+        updateUI();
     }
 
     function startLevel() {
         document.getElementById('modal').style.display = 'none';
         score = 0; items = []; 
-        // Cria 12 itens (mais inimigos que o normal)
         for(let i=0; i<12; i++) spawn(true);
         gameActive = true; updateUI(); if(level === 0) loop();
     }
 
     function spawn(init = false) {
-        // 70% de chance de ser inimigo nos níveis altos
         const isGood = Math.random() > (0.4 + (level * 0.03));
         items.push({ 
             x: Math.random() * canvas.width, 
@@ -130,42 +129,40 @@
         c.opts.forEach((o, i) => {
             const b = document.createElement('button'); b.className = "opt-btn"; b.innerText = o;
             b.onclick = () => {
+                document.getElementById('quiz-modal').style.display = 'none';
                 if(i === c.ans) { 
                     playSound(800,'sine',0.3); level++; 
-                    if(level < 9) updateModal(); else alert("VOCÊ É O MAIOR CONHECEDOR DE ARARUAMA!"); 
+                    if(level < 9) {
+                        updateModal(); 
+                    } else {
+                        alert("PARABÉNS! VOCÊ É O MAIOR CONHECEDOR DE ARARUAMA!"); 
+                        level = 0; score = 0; gameActive = false; updateModal();
+                    }
                 } else { 
                     playSound(100,'square',0.5); alert("ERROU! O tempo voltou e você deve refazer o nível."); 
                     score = 0; startLevel(); 
                 }
-                document.getElementById('quiz-modal').style.display = 'none';
             };
-            
- 
             div.appendChild(b);
         });
         document.getElementById('quiz-modal').style.display = 'flex';
     }
 
     function loop() {
-        
-        if(gameActive) {
+        if(gameActive && level < 9) {
             const c = campaign[level];
             ctx.fillStyle = c.bg; ctx.fillRect(0,0,canvas.width, canvas.height);
             ctx.fillStyle = c.gr; ctx.fillRect(0, canvas.height*0.85, canvas.width, canvas.height*0.15);
             
-            // Jogador
             ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(player.x, player.y, 25, 0, Math.PI*2); ctx.fill();
             ctx.strokeStyle = "gold"; ctx.lineWidth = 3; ctx.stroke();
             
             items.forEach((it, i) => {
                 it.y += it.s;
-                it.x += Math.sin(it.y * it.swing) * 2; // Movimento em zigue-zague
-
+                it.x += Math.sin(it.y * it.swing) * 2;
                 if(it.y > canvas.height) { items.splice(i,1); spawn(); }
-
                 ctx.font = "38px Arial"; ctx.textAlign = "center";
                 ctx.fillText(it.isG ? c.icon : c.enemy, it.x, it.y);
-
                 if(Math.hypot(player.x-it.x, player.y-it.y) < 40) {
                     if(it.isG) { 
                         score++; playSound(600,'sine',0.1); 
