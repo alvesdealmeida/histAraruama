@@ -3,52 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Araruama: Guardião Pro 8.4</title>
+    <title>Araruama: Expedição Suave</title>
     <style>
         :root { --gold: #f4d03f; --danger: #ff4757; --deep-green: #1b4d3e; --success: #2ecc71; --sand: #f5e6be; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Georgia', serif; touch-action: none; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: sans-serif; touch-action: none; }
         
-        #ui { position: absolute; top: 10px; left: 10px; right: 10px; color: white; z-index: 10; pointer-events: none; display: none; font-family: sans-serif; }
-        #stats { display: flex; justify-content: space-between; background: rgba(0,0,0,0.9); padding: 12px; border-radius: 12px; border: 2px solid var(--gold); }
-        .label { color: var(--gold); font-size: 0.65rem; display: block; text-transform: uppercase; letter-spacing: 1px; }
-        .val { font-size: 1.2rem; font-weight: bold; }
+        #ui { position: absolute; top: 10px; left: 10px; right: 10px; color: white; z-index: 10; pointer-events: none; display: none; }
+        #stats { display: flex; justify-content: space-between; background: rgba(0,0,0,0.8); padding: 10px; border-radius: 12px; border: 2px solid var(--gold); }
+        .label { color: var(--gold); font-size: 0.6rem; display: block; text-transform: uppercase; }
+        .val { font-size: 1rem; font-weight: bold; }
 
         #btn-desistir {
-            position: absolute; bottom: 25px; right: 20px; width: 65px; height: 65px; 
-            background: #a00000; border: 4px solid var(--gold); border-radius: 50%;
-            color: white; font-size: 2rem; display: none; align-items: center; 
-            justify-content: center; z-index: 500; cursor: pointer;
-            box-shadow: 0 0 15px rgba(255,0,0,0.5);
+            position: absolute; bottom: 20px; right: 20px; width: 55px; height: 55px; 
+            background: #a00000; border: 3px solid var(--gold); border-radius: 50%;
+            color: white; font-size: 1.5rem; display: none; align-items: center; 
+            justify-content: center; z-index: 500;
         }
 
         #msg-overlay { 
             position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 2.5rem; font-weight: bold; display: none; z-index: 600;
-            text-shadow: 3px 3px 0px #000; pointer-events: none; text-align: center; width: 90%;
+            font-size: 2rem; font-weight: bold; display: none; z-index: 600;
+            text-shadow: 2px 2px 4px #000; text-align: center; width: 90%;
         }
 
         .modal { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             display: flex; align-items: center; justify-content: center; 
-            background: rgba(0,0,0,0.9); z-index: 400; 
+            background: rgba(0,0,0,0.8); z-index: 400; 
         }
         .card { 
-            background: var(--sand); width: 92%; max-width: 420px; border-radius: 20px; 
-            overflow: hidden; text-align: center; border: 5px solid var(--deep-green);
+            background: var(--sand); width: 90%; max-width: 380px; border-radius: 15px; 
+            overflow: hidden; text-align: center; border: 3px solid var(--deep-green);
         }
-        .card-header { background: var(--deep-green); color: var(--gold); padding: 15px; }
-        .card-body { padding: 20px; color: var(--deep-green); }
+        .card-header { background: var(--deep-green); color: var(--gold); padding: 12px; }
+        .card-body { padding: 15px; color: var(--deep-green); }
 
-        .tabs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
-        .tab { padding: 10px; background: rgba(0,0,0,0.1); font-size: 0.7rem; cursor: pointer; border-radius: 6px; font-weight: bold; border: 1px solid transparent; }
-        .tab.active { background: var(--deep-green); color: var(--gold); border-color: var(--gold); }
+        .tabs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 15px; }
+        .tab { padding: 8px; background: rgba(0,0,0,0.1); font-size: 0.65rem; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .tab.active { background: var(--deep-green); color: var(--gold); }
 
         .btn-main { 
-            background: var(--deep-green); color: var(--gold); padding: 16px; border: none; 
-            border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1.1rem; text-transform: uppercase;
+            background: var(--deep-green); color: var(--gold); padding: 14px; border: none; 
+            border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer;
         }
         
-        #damage-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,0,0,0.6); display:none; pointer-events:none; z-index:5; }
+        #damage-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,0,0,0.4); display:none; pointer-events:none; z-index:5; }
     </style>
 </head>
 <body>
@@ -59,31 +58,31 @@
 
 <div id="ui">
     <div id="stats">
-        <div><span class="label">DISTRITO</span><span id="txt-loc" class="val">-</span></div>
-        <div><span class="label">TEMPO</span><span id="txt-time" class="val">25s</span></div>
-        <div><span class="label">PONTOS</span><span id="txt-target" class="val">0 / 10</span></div>
+        <div><span class="label">📍 LOCAL</span><span id="txt-loc" class="val">-</span></div>
+        <div><span class="label">⏳ TEMPO</span><span id="txt-time" class="val">40s</span></div>
+        <div><span class="label">⭐ PONTOS</span><span id="txt-target" class="val">0/10</span></div>
     </div>
 </div>
 
 <div id="modal" class="modal">
     <div class="card">
-        <div class="card-header"><h2>DISTRITOS DE ARARUAMA</h2></div>
+        <div class="card-header"><h3>GUIA DE ARARUAMA</h3></div>
         <div class="card-body">
             <div class="tabs-grid" id="tabs-container"></div>
-            <span id="m-icon" style="font-size: 4rem; display: block; margin-bottom: 10px;">🐚</span>
+            <span id="m-icon" style="font-size: 3rem; display: block; margin: 10px 0;">🐚</span>
             <h3 id="m-title" style="margin: 5px 0;">-</h3>
-            <p id="m-text" style="font-size: 0.9rem; margin-bottom: 20px; font-weight: bold;"></p>
-            <button class="btn-main" onclick="startLevel()">INICIAR MISSÃO</button>
+            <p id="m-text" style="font-size: 0.85rem; margin-bottom: 15px;"></p>
+            <button class="btn-main" onclick="startLevel()">JOGAR</button>
         </div>
     </div>
 </div>
 
 <div id="quiz-modal" class="modal" style="display:none;">
     <div class="card">
-        <div class="card-header"><h3>DESAFIO DE HISTÓRIA</h3></div>
+        <div class="card-header"><h4>DESAFIO FINAL</h4></div>
         <div class="card-body">
-            <p id="q-question" style="font-weight:bold; font-size: 1.2rem; margin-bottom: 20px;"></p>
-            <div id="q-options" style="display:flex; flex-direction:column; gap:10px;"></div>
+            <p id="q-question" style="font-weight:bold; margin-bottom: 15px;"></p>
+            <div id="q-options" style="display:flex; flex-direction:column; gap:8px;"></div>
         </div>
     </div>
 </div>
@@ -96,28 +95,16 @@
     let audioCtx, gameTimer;
 
     const districts = [
-        { name: "Centro", title: "Sambaquis", icon: "🐚", enemy: "🦀", bg: "#87CEEB", gr: "#f4d03f", quiz: [
-            {q: "O que compõe os Sambaquis?", o: ["Conchas e vestígios", "Apenas pedras", "Plástico"], a: 0},
-            {q: "O Museu Arqueológico fica no?", o: ["Centro (Sambaqui)", "Iguabinha", "Morro Grande"], a: 0}
-        ]},
-        { name: "S. Vicente", title: "Citricultura", icon: "🍊", enemy: "🐛", bg: "#2d5a27", gr: "#8b4513", quiz: [
-            {q: "Qual era a fruta de ouro de S. Vicente?", o: ["Laranja", "Maçã", "Pêra"], a: 0}
-        ]},
-        { name: "Laguna", title: "Ciclo do Sal", icon: "🧂", enemy: "⛈️", bg: "#0077be", gr: "#eee", quiz: [
-            {q: "O que movia os moinhos de sal?", o: ["Ventos", "Motores a diesel", "Cavalos"], a: 0}
-        ]},
-        { name: "Praia Seca", title: "Restinga", icon: "🏄", enemy: "☀️", bg: "#00a8ff", gr: "#f5e6be", quiz: [
-            {q: "Praia Seca fica entre a Lagoa e o?", o: ["Oceano Atlântico", "Rio", "Pântano"], a: 0}
-        ]},
-        { name: "Iguabinha", title: "Águas Calmas", icon: "🛶", enemy: "🦟", bg: "#48dbfb", gr: "#2ecc71", quiz: [
-            {q: "As águas de Iguabinha são?", o: ["Calmas e Medicinais", "Bravas", "Poluídas"], a: 0}
-        ]},
-        { name: "M. Grande", title: "Rural", icon: "🐎", enemy: "🚜", bg: "#57606f", gr: "#2f3542", quiz: [
-            {q: "Morro Grande se destaca na?", o: ["Agropecuária", "Pesca de alto mar", "Mineração"], a: 0}
-        ]}
+        { name: "Centro", title: "Sambaquis", icon: "🐚", enemy: "🦀", bg: "#87CEEB", gr: "#f4d03f", quiz: "O que são Sambaquis?" },
+        { name: "S. Vicente", title: "Laranjas", icon: "🍊", enemy: "🐛", bg: "#2d5a27", gr: "#8b4513", quiz: "Qual a fruta famosa daqui?" },
+        { name: "Laguna", title: "Salinas", icon: "🧂", enemy: "⛈️", bg: "#0077be", gr: "#eee", quiz: "O que os moinhos moíam?" },
+        { name: "Praia Seca", title: "Mar e Lagoa", icon: "🏄", enemy: "☀️", bg: "#00a8ff", gr: "#f5e6be", quiz: "Onde fica Praia Seca?" },
+        { name: "Iguabinha", title: "Águas Rasas", icon: "🛶", enemy: "🦟", bg: "#48dbfb", gr: "#2ecc71", quiz: "Como é a água aqui?" },
+        { name: "M. Grande", title: "Fazendas", icon: "🐎", enemy: "🚜", bg: "#57606f", gr: "#2f3542", quiz: "Qual a atividade local?" }
     ];
 
-    let level = 0, score = 0, timeLeft = 25, gameActive = false, speedMult = 1.4;
+    // CONFIGURAÇÃO SUAVE PARA CELULAR
+    let level = 0, score = 0, timeLeft = 40, gameActive = false, speedMult = 1.0;
     let player = { x: 0, y: 0 }; let items = [];
 
     function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
@@ -137,7 +124,7 @@
         districts.forEach((d, i) => {
             const t = document.createElement('div');
             t.className = `tab ${i === level ? 'active' : ''}`;
-            t.innerText = d.name.toUpperCase();
+            t.innerText = d.name.split(' ')[0];
             t.onclick = () => { level = i; renderTabs(); updateMenu(); };
             container.appendChild(t);
         });
@@ -147,7 +134,7 @@
         const d = districts[level];
         document.getElementById('m-icon').innerText = d.icon;
         document.getElementById('m-title').innerText = d.title;
-        document.getElementById('m-text').innerText = `DESAFIO: Capture 10 itens!`;
+        document.getElementById('m-text').innerText = `Pegue 10 itens devagar!`;
     }
 
     function startLevel() {
@@ -155,30 +142,26 @@
         document.getElementById('modal').style.display = 'none';
         document.getElementById('ui').style.display = 'block';
         document.getElementById('btn-desistir').style.display = 'flex';
-        score = 0; items = []; timeLeft = 25; 
-        
-        // PARAMETRO SOLICITADO: MULTIPLICADOR 1.4
-        speedMult = 1.4 + (level * 0.1); 
-        
+        score = 0; items = []; timeLeft = 40; 
+        speedMult = 1.0 + (level * 0.05); // Aumento mínimo por nível
         gameActive = true;
         updateUI();
         clearInterval(gameTimer);
         gameTimer = setInterval(() => {
             timeLeft--;
-            if(timeLeft <= 0) gameOver("FIM DO TEMPO!");
+            if(timeLeft <= 0) gameOver("TENTE DE NOVO!");
             updateUI();
         }, 1000);
-        for(let i=0; i<8; i++) spawn(true);
+        for(let i=0; i<5; i++) spawn(true);
     }
 
     function spawn(init = false) {
         if (!gameActive && !init) return;
-        // PARAMETRO SOLICITADO: VELOCIDADE BÁSICA 8.0
-        let baseSpeed = 8.0 + Math.random() * 4;
-        
+        // VELOCIDADE REDUZIDA PARA 4.5
+        let baseSpeed = 4.5 + Math.random() * 2;
         items.push({ 
-            x: Math.random() * (canvas.width - 60) + 30, 
-            y: init ? (Math.random() * -canvas.height) : -50, 
+            x: Math.random() * (canvas.width - 50) + 25, 
+            y: init ? (Math.random() * -canvas.height) : -40, 
             isG: Math.random() > 0.4,
             s: baseSpeed * speedMult
         });
@@ -186,7 +169,6 @@
 
     function gameOver(txt) {
         gameActive = false; clearInterval(gameTimer);
-        playSnd(100, 'sawtooth', 0.8);
         const m = document.getElementById('msg-overlay');
         m.innerText = txt; m.style.color = "var(--danger)"; m.style.display = 'block';
         setTimeout(() => { m.style.display = 'none'; desistir(); }, 2000);
@@ -204,24 +186,18 @@
     function showQuiz() {
         gameActive = false; clearInterval(gameTimer);
         const d = districts[level];
-        const q = d.quiz[Math.floor(Math.random() * d.quiz.length)];
-        document.getElementById('q-question').innerText = q.q;
+        document.getElementById('q-question').innerText = d.quiz;
         const opts = document.getElementById('q-options');
         opts.innerHTML = "";
-        q.o.forEach((opt, i) => {
+        ["Correto", "Incorreto", "Não sei"].forEach((opt, i) => {
             const b = document.createElement('button');
             b.className = "btn-main";
             b.innerText = opt;
             b.onclick = () => {
-                if(i === q.a) {
+                if(i === 0) {
                     playSnd(800, 'sine', 0.5);
-                    const m = document.getElementById('msg-overlay');
-                    m.innerText = "SÁBIO!"; m.style.color = "var(--success)"; m.style.display = 'block';
-                    setTimeout(() => { m.style.display = 'none'; level = (level + 1) % districts.length; desistir(); }, 1500);
-                } else {
-                    document.getElementById('quiz-modal').style.display = 'none';
-                    gameOver("TENTE NOVAMENTE!");
-                }
+                    level = (level + 1) % districts.length; desistir();
+                } else { gameOver("ERROU!"); }
             };
             opts.appendChild(b);
         });
@@ -232,25 +208,22 @@
         if(gameActive) {
             const d = districts[level];
             ctx.fillStyle = d.bg; ctx.fillRect(0,0,canvas.width, canvas.height);
-            ctx.fillStyle = d.gr; ctx.fillRect(0, canvas.height*0.88, canvas.width, canvas.height*0.12);
+            ctx.fillStyle = d.gr; ctx.fillRect(0, canvas.height*0.9, canvas.width, canvas.height*0.1);
             
-            // Jogador (Orb Branco)
-            ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(player.x, player.y, 25, 0, Math.PI*2); ctx.fill();
-            ctx.strokeStyle = "var(--gold)"; ctx.lineWidth = 3; ctx.stroke();
+            ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(player.x, player.y, 22, 0, Math.PI*2); ctx.fill();
 
             for(let i = items.length - 1; i >= 0; i--) {
                 let it = items[i]; it.y += it.s;
-                ctx.font = "40px Arial"; ctx.textAlign = "center";
+                ctx.font = "30px Arial"; ctx.textAlign = "center";
                 ctx.fillText(it.isG ? d.icon : d.enemy, it.x, it.y);
                 
-                if(Math.hypot(player.x - it.x, player.y - it.y) < 45) {
+                if(Math.hypot(player.x - it.x, player.y - it.y) < 40) {
                     if(it.isG) { 
                         score++; 
-                        // Aceleração progressiva por ponto para manter o desafio
-                        speedMult += 0.05; 
-                        playSnd(600 + score*30, 'sine', 0.1); 
+                        speedMult += 0.03; // ACELERAÇÃO MUITO SUAVE
+                        playSnd(600, 'sine', 0.1); 
                     } else { 
-                        score = Math.max(0, score - 3); playSnd(150, 'sawtooth', 0.2);
+                        score = Math.max(0, score - 1);
                         document.getElementById('damage-overlay').style.display='block'; 
                         setTimeout(()=>document.getElementById('damage-overlay').style.display='none', 80); 
                     }
@@ -263,7 +236,7 @@
     }
 
     function updateUI() {
-        document.getElementById('txt-target').innerText = `${score} / 10`;
+        document.getElementById('txt-target').innerText = `${score}/10`;
         document.getElementById('txt-time').innerText = timeLeft + "s";
         document.getElementById('txt-loc').innerText = districts[level].name;
     }
