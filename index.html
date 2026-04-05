@@ -142,7 +142,7 @@
         document.getElementById('modal').style.display = 'none';
         document.getElementById('ui').style.display = 'block';
         document.getElementById('btn-desistir').style.display = 'flex';
-        score = 0; items = []; timeLeft = 35; 
+        score = 0; items = []; timeLeft = 15; 
         
         // Mantemos o speedMult base do distrito, mas o cálculo de velocidade vem do anexo
         speedMult = 1.0; 
@@ -157,14 +157,14 @@
         }, 1000);
 
         // DADO DO ANEXO: QUANTIDADE DE OBJETOS = 12
-        for(let i=0; i<12; i++) spawn(true);
+        for(let i=0; i<18; i++) spawn(true);
     }
 
     function spawn(init = false) {
         if (!gameActive && !init) return;
         
         // DADO DO ANEXO: Lógica de Velocidade (s)
-        let baseSpeed = (2 + (level * 0.5)) + Math.random() * 2;
+        let baseSpeed = (2.2 + (level * 0.7)) + Math.random() * 2;
         
         items.push({ 
             x: Math.random() * (canvas.width - 60) + 30, 
