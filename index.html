@@ -3,90 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Araruama: Guardião da História - HARD</title>
+    <title>Araruama: Guardião de Elite</title>
     <style>
-        :root { --gold: #f4d03f; --danger: #ff4757; --deep-green: #1b4d3e; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; touch-action: none; }
+        :root { --gold: #f4d03f; --danger: #ff4757; --deep-green: #1b4d3e; --success: #2ecc71; --sand: #f5e6be; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Georgia', serif; touch-action: none; }
         
-        /* UI de Jogo */
-        #ui { position: absolute; top: 10px; left: 10px; color: white; z-index: 10; pointer-events: none; }
-        #stats { display: flex; gap: 10px; background: rgba(0,0,0,0.8); padding: 12px; border-radius: 12px; border: 2px solid var(--gold); }
-        .label { color: var(--gold); font-size: 0.7rem; display: block; text-transform: uppercase; letter-spacing: 1px; }
-        .val { font-size: 1rem; font-weight: bold; }
+        /* UI de Jogo Superior */
+        #ui { position: absolute; top: 10px; left: 10px; right: 10px; color: white; z-index: 10; pointer-events: none; display: none; font-family: sans-serif; }
+        #stats { display: flex; justify-content: space-between; background: rgba(0,0,0,0.9); padding: 12px; border-radius: 12px; border: 2px solid var(--gold); }
+        .label { color: var(--gold); font-size: 0.6rem; display: block; text-transform: uppercase; }
+        .val { font-size: 1.1rem; font-weight: bold; }
 
-        /* Estilização da Tela Inicial e Modais */
+        /* BOTÃO DESISTIR - CANTO INFERIOR DIREITO */
+        #btn-desistir {
+            position: absolute; 
+            bottom: 30px; 
+            right: 20px; 
+            width: 65px; 
+            height: 65px; 
+            background: #800000; /* Vermelho escuro forte */
+            border: 4px solid var(--gold); 
+            border-radius: 50%;
+            color: white; 
+            font-size: 2rem; 
+            display: none; /* Só aparece durante o jogo */
+            align-items: center; 
+            justify-content: center; 
+            z-index: 500; /* Na frente de tudo */
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #msg-overlay { 
+            position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 2.2rem; font-weight: bold; display: none; z-index: 600;
+            text-shadow: 3px 3px 0px #000; pointer-events: none; text-align: center; width: 90%;
+        }
+
+        /* Menus e Modais */
         .modal { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             display: flex; align-items: center; justify-content: center; 
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); /* Degradê Cinematográfico */
-            z-index: 100; 
+            background: rgba(0,0,0,0.9); z-index: 400; 
         }
-
         .card { 
-            background: rgba(255, 255, 255, 0.9); 
-            backdrop-filter: blur(10px); /* Efeito de Vidro */
-            color: #333; width: 90%; max-width: 420px; border-radius: 25px; 
-            overflow: hidden; text-align: center; border: 4px solid var(--gold); 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            animation: slideUp 0.5s ease-out;
+            background: var(--sand); width: 92%; max-width: 450px; border-radius: 15px; 
+            overflow: hidden; text-align: center; border: 4px solid var(--deep-green);
         }
+        .card-header { background: var(--deep-green); color: var(--gold); padding: 15px; }
+        .card-body { padding: 15px; color: var(--deep-green); }
 
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .card-header { background: var(--deep-green); color: white; padding: 20px; font-size: 1.3rem; font-weight: bold; }
-        .card-body { padding: 30px; }
-        
-        .quiz-options { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-        .opt-btn { background: #f1f2f6; border: 2px solid #dfe4ea; padding: 15px; border-radius: 12px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .opt-btn:hover { background: var(--gold); }
+        .tabs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 15px; }
+        .tab { padding: 8px; background: rgba(0,0,0,0.1); font-size: 0.65rem; cursor: pointer; border-radius: 4px; font-weight: bold; border: 1px solid transparent; }
+        .tab.active { background: var(--deep-green); color: var(--gold); border-color: var(--gold); }
 
         .btn-main { 
-            background: var(--deep-green); color: white; padding: 18px; border: none; 
-            border-radius: 50px; font-weight: bold; cursor: pointer; width: 100%; 
-            font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            background: var(--deep-green); color: var(--gold); padding: 15px; border: none; 
+            border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1rem; text-transform: uppercase;
         }
-
-        #damage-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,0,0,0.3); display:none; pointer-events:none; z-index:5; }
-        canvas { display: block; }
-
-        .icon-intro { font-size: 4rem; margin-bottom: 10px; display: block; }
+        
+        #damage-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,0,0,0.6); display:none; pointer-events:none; z-index:5; }
     </style>
 </head>
 <body>
 
 <div id="damage-overlay"></div>
+<div id="msg-overlay"></div>
+
+<!-- O BOTÃO SOLICITADO -->
+<div id="btn-desistir" onclick="desistir()">🚪</div>
+
 <div id="ui">
     <div id="stats">
-        <div><span class="label">NÍVEL</span><span id="txt-lv" class="val">1 / 9</span></div>
-        <div><span class="label">META</span><span id="txt-target" class="val">0 / 10</span></div>
-        <div><span class="label">LOCAL</span><span id="txt-loc" class="val">-</span></div>
+        <div><span class="label">DISTRITO</span><span id="txt-loc" class="val">-</span></div>
+        <div><span class="label">TEMPO</span><span id="txt-time" class="val">25s</span></div>
+        <div><span class="label">PONTOS</span><span id="txt-target" class="val">0 / 10</span></div>
     </div>
 </div>
 
-<!-- Modal Principal (Início e Transição) -->
 <div id="modal" class="modal">
     <div class="card">
-        <div class="card-header"><span id="m-title"></span></div>
+        <div class="card-header"><h1>MENU DO GUARDIÃO</h1></div>
         <div class="card-body">
-            <span class="icon-intro" id="m-icon">🏛️</span>
-            <p id="m-text" style="font-size: 1.1rem; line-height: 1.5; color: #555; margin-bottom: 25px;"></p>
-            <button class="btn-main" onclick="startLevel()">Iniciar Jornada</button>
-            <p style="font-size: 0.7rem; color: #999; margin-top: 15px;">Mova o dedo ou mouse para coletar itens e desviar de perigos.</p>
+            <div class="tabs-grid" id="tabs-container"></div>
+            <span id="m-icon" style="font-size: 3.5rem; display: block; margin-bottom: 5px;">🐚</span>
+            <h2 id="m-title" style="margin: 5px 0;">-</h2>
+            <p id="m-text" style="font-size: 0.85rem; margin-bottom: 15px; height: 40px; font-weight: bold;"></p>
+            <button class="btn-main" onclick="startLevel()">ASSUMIR POSTO</button>
         </div>
     </div>
 </div>
 
-<!-- Modal do Quiz -->
-<div id="quiz-modal" class="modal" style="display:none">
+<div id="quiz-modal" class="modal" style="display:none;">
     <div class="card">
-        <div class="card-header">🧩 DESAFIO DO CONHECIMENTO</div>
+        <div class="card-header"><h1>PROVA DE HONRA</h1></div>
         <div class="card-body">
-            <p id="q-question" style="font-weight:bold; font-size: 1.2rem; margin-bottom: 20px;"></p>
-            <div id="q-options" class="quiz-options"></div>
+            <p id="q-question" style="font-weight:bold; font-size: 1.1rem; margin-bottom: 20px;"></p>
+            <div id="q-options" style="display:flex; flex-direction:column; gap:10px;"></div>
         </div>
     </div>
 </div>
@@ -96,149 +110,185 @@
 <script>
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let audioCtx, gameTimer;
 
-    function playSound(f, t, d) {
-        try {
-            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-            o.type = t; o.frequency.value = f; g.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+d);
-        } catch(e){}
-    }
-
-    let level = 0, score = 0, gameActive = false;
-    let player = { x: 0, y: 0 }; let items = [];
-
-    const campaign = [
-        { title: "OS SAMBAQUIS", loc: "Centro", info: "Araruama significa 'Lugar de conchas'. Proteja os vestígios milenares e desvie dos caranguejos!", icon: "🐚", enemy: "🦀", bg: "#87CEEB", gr: "#f4d03f", q: "Qual o significado tupi de Araruama?", opts: ["Terra do Fogo", "Abundância de conchas", "Rio Salgado"], ans: 1 },
-        { title: "A ALDEIA TUPINAMBÁ", loc: "Aldeia", info: "Navegue com os Tamoios pela laguna original. Cuidado com as fogueiras de guerra!", icon: "🛶", enemy: "🔥", bg: "#2d5a27", gr: "#8b4513", q: "Quem eram os habitantes originais da região?", opts: ["Tupinambás", "Incas", "Astecas"], ans: 0 },
-        { title: "BATALHA DE 1575", loc: "Batalha", info: "O cerco à Aldeia de Araruama. Sobreviva ao ataque das tropas de Antônio Salema!", icon: "🏹", enemy: "💣", bg: "#4a4a4a", gr: "#333", q: "Quem liderou o ataque português em 1575?", opts: ["Cabral", "Antônio Salema", "D. Pedro I"], ans: 1 },
-        { title: "CICLO DO SAL", loc: "Laguna", info: "O Ouro Branco impulsionou nossa economia. Não deixe o lixo poluir nossa riqueza!", icon: "💎", enemy: "🗑️", bg: "#0077be", gr: "#fff", q: "Como o sal era conhecido no auge da produção?", opts: ["Ouro Branco", "Prata da Terra", "Cristal Doce"], ans: 0 },
-        { title: "OS MOINHOS DE VENTO", loc: "Orla", info: "Símbolos da nossa paisagem. Fuja das tempestades que assolam a orla!", icon: "🌀", enemy: "⛈️", bg: "#3498db", gr: "#eee", q: "Qual era a função original dos moinhos?", opts: ["Gerar eletricidade", "Bombear água salgada", "Apenas decoração"], ans: 1 },
-        { title: "CAFÉ EM SÃO VICENTE", loc: "Zona Rural", info: "A riqueza vinha da terra. Proteja as sacas de café das pragas famintas!", icon: "☕", enemy: "🐛", bg: "#5d4037", gr: "#3e2723", q: "Qual o distrito famoso pela vocação agrícola?", opts: ["Iguabinha", "São Vicente", "Parati"], ans: 1 },
-        { title: "RESTINGA DE PRAIA SECA", loc: "Praia Seca", info: "O paraíso entre o mar e a lagoa. Cuidado com as correntes e predadores!", icon: "🏄", enemy: "🦈", bg: "#00bcd4", gr: "#ffeb3b", q: "Onde se localiza o distrito de Praia Seca?", opts: ["No Morro", "Na Restinga", "No Centro"], ans: 1 },
-        { title: "LAGOA DE JUTURNAÍBA", loc: "Água Doce", info: "Nossa maior reserva de água doce. Fuja dos jacarés da reserva!", icon: "💧", enemy: "🐊", bg: "#1b4d3e", gr: "#4b3621", q: "Juturnaíba é uma importante reserva de:", opts: ["Sal", "Água Doce", "Petróleo"], ans: 1 },
-        { title: "A EMANCIPAÇÃO", loc: "Câmara", info: "6 de Fevereiro de 1859. O cadeado da submissão deve ser destruído!", icon: "📜", enemy: "🔒", bg: "#1a2a6c", gr: "#2d5a27", q: "Em que dia se comemora a emancipação da cidade?", opts: ["1 de Janeiro", "6 de Fevereiro", "13 de Maio"], ans: 1 }
+    const districts = [
+        { name: "Centro", title: "Sambaquis", icon: "🐚", enemy: "🦀", bg: "#87CEEB", gr: "#f4d03f", quiz: [
+            {q: "O que compõe a estrutura dos Sambaquis?", o: ["Conchas e sedimentos", "Lixo moderno", "Pedras"], a: 0}
+        ]},
+        { name: "S. Vicente", title: "Citricultura", icon: "🍊", enemy: "🐛", bg: "#2d5a27", gr: "#8b4513", quiz: [
+            {q: "Qual o 'ouro verde' de S. Vicente?", o: ["Café", "Laranja", "Cana"], a: 1}
+        ]},
+        { name: "Laguna", title: "Ciclo do Sal", icon: "🧂", enemy: "⛈️", bg: "#0077be", gr: "#eee", quiz: [
+            {q: "O que movia os moinhos?", o: ["Vento", "Motor", "Vapor"], a: 0}
+        ]},
+        { name: "Praia Seca", title: "Restinga", icon: "🏄", enemy: "☀️", bg: "#00a8ff", gr: "#f5e6be", quiz: [
+            {q: "Praia Seca fica em qual restinga?", o: ["Maricá", "Massambaba", "Pontal"], a: 1}
+        ]},
+        { name: "Iguabinha", title: "Águas Calmas", icon: "🛶", enemy: "🦟", bg: "#48dbfb", gr: "#2ecc71", quiz: [
+            {q: "As águas de Iguabinha são conhecidas por serem...", o: ["Medicinais", "Geladas", "Onduladas"], a: 0}
+        ]},
+        { name: "Morro Grande", title: "Rural", icon: "🐎", enemy: "🚜", bg: "#57606f", gr: "#2f3542", quiz: [
+            {q: "Qual o destaque de Morro Grande?", o: ["Agropecuária", "Sal", "Pesca"], a: 0}
+        ]}
     ];
 
-    function updateModal() {
-        const c = campaign[level];
-        const titleEl = document.getElementById('m-title');
-        const iconEl = document.getElementById('m-icon');
+    let level = 0, score = 0, timeLeft = 25, gameActive = false, speedMult = 1.5;
+    let player = { x: 0, y: 0 }; let items = [];
 
-        if(level === 0) {
-            titleEl.innerText = "GUARDIÃO DE ARARUAMA";
-            iconEl.innerText = "🛡️";
-        } else {
-            titleEl.innerText = c.title;
-            iconEl.innerText = c.icon;
-        }
-        
-        document.getElementById('m-text').innerText = c.info;
-        document.getElementById('modal').style.display = 'flex';
-        updateUI();
+    function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    function playSnd(f, t, d, v=0.2) {
+        if(!audioCtx) return;
+        const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+        o.type = t; o.frequency.setValueAtTime(f, audioCtx.currentTime);
+        g.gain.setValueAtTime(v, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(); o.stop(audioCtx.currentTime + d);
     }
 
-    function startLevel() {
-        document.getElementById('modal').style.display = 'none';
-        score = 0; items = []; 
-        for(let i=0; i<12; i++) spawn(true);
-        gameActive = true; updateUI(); if(level === 0) loop();
-    }
-
-    function spawn(init = false) {
-        const isGood = Math.random() > (0.4 + (level * 0.03));
-        items.push({ 
-            x: Math.random() * canvas.width, 
-            y: init ? (Math.random() * -canvas.height) : -50, 
-            isG: isGood, 
-            s: (2 + (level * 0.5)) + Math.random() * 2,
-            swing: Math.random() * 0.05
+    function renderTabs() {
+        const container = document.getElementById('tabs-container');
+        container.innerHTML = "";
+        districts.forEach((d, i) => {
+            const t = document.createElement('div');
+            t.className = `tab ${i === level ? 'active' : ''}`;
+            t.innerText = d.name.toUpperCase();
+            t.onclick = () => { level = i; renderTabs(); updateMenu(); };
+            container.appendChild(t);
         });
     }
 
-    function updateUI() {
-        const c = campaign[level];
-        document.getElementById('txt-lv').innerText = `${level + 1} / 9`;
-        document.getElementById('txt-target').innerText = `${score} / 10`;
-        document.getElementById('txt-loc').innerText = c.loc;
+    function updateMenu() {
+        const d = districts[level];
+        document.getElementById('m-icon').innerText = d.icon;
+        document.getElementById('m-title').innerText = d.title;
+        document.getElementById('m-text').innerText = `Colete 10 ${d.icon} em 25 segundos!`;
     }
 
-    function triggerDamage() {
-        const ov = document.getElementById('damage-overlay');
-        ov.style.display = 'block';
-        setTimeout(() => ov.style.display = 'none', 150);
+    function startLevel() {
+        initAudio();
+        document.getElementById('modal').style.display = 'none';
+        document.getElementById('ui').style.display = 'block';
+        document.getElementById('btn-desistir').style.display = 'flex'; // APARECE O BOTÃO
+        score = 0; items = []; timeLeft = 25; speedMult = 1.5 + (level * 0.1); gameActive = true;
+        updateUI();
+        clearInterval(gameTimer);
+        gameTimer = setInterval(() => {
+            timeLeft--;
+            if(timeLeft <= 0) gameOver("TEMPO ESGOTADO!");
+            updateUI();
+        }, 1000);
+        for(let i=0; i<8; i++) spawn(true);
+    }
+
+    function spawn(init = false) {
+        if (!gameActive && !init) return;
+        items.push({ 
+            x: Math.random() * (canvas.width - 60) + 30, 
+            y: init ? (Math.random() * -canvas.height) : -50, 
+            isG: Math.random() > 0.4,
+            s: (8 + level + Math.random() * 5) * speedMult
+        });
+    }
+
+    function gameOver(txt) {
+        gameActive = false; clearInterval(gameTimer);
+        playSnd(100, 'sawtooth', 0.8);
+        const m = document.getElementById('msg-overlay');
+        m.innerText = txt; m.style.color = "var(--danger)"; m.style.display = 'block';
+        setTimeout(() => { m.style.display = 'none'; desistir(); }, 2000);
+    }
+
+    // FUNÇÃO QUE RETORNA AO INÍCIO
+    function desistir() {
+        gameActive = false;
+        clearInterval(gameTimer);
+        document.getElementById('ui').style.display = 'none';
+        document.getElementById('quiz-modal').style.display = 'none';
+        document.getElementById('btn-desistir').style.display = 'none'; // SOME O BOTÃO
+        document.getElementById('modal').style.display = 'flex';
+        renderTabs(); 
+        updateMenu();
     }
 
     function showQuiz() {
-        gameActive = false; const c = campaign[level];
-        document.getElementById('q-question').innerText = c.q;
-        const div = document.getElementById('q-options'); div.innerHTML = "";
-        c.opts.forEach((o, i) => {
-            const b = document.createElement('button'); b.className = "opt-btn"; b.innerText = o;
+        gameActive = false; clearInterval(gameTimer);
+        const d = districts[level];
+        const q = d.quiz[Math.floor(Math.random() * d.quiz.length)];
+        document.getElementById('q-question').innerText = q.q;
+        const opts = document.getElementById('q-options');
+        opts.innerHTML = "";
+        q.o.forEach((opt, i) => {
+            const b = document.createElement('button');
+            b.className = "btn-main";
+            b.innerText = opt;
             b.onclick = () => {
-                document.getElementById('quiz-modal').style.display = 'none';
-                if(i === c.ans) { 
-                    playSound(800,'sine',0.3); level++; 
-                    if(level < 9) {
-                        updateModal(); 
-                    } else {
-                        alert("PARABÉNS! VOCÊ RESTAUROU A HISTÓRIA DE ARARUAMA!"); 
-                        level = 0; score = 0; gameActive = false; updateModal();
-                    }
-                } else { 
-                    playSound(100,'square',0.5); alert("RESPOSTA INCORRETA! O fluxo do tempo foi interrompido. Tente novamente o nível."); 
-                    score = 0; startLevel(); 
+                if(i === q.a) {
+                    playSnd(800, 'sine', 0.5);
+                    const m = document.getElementById('msg-overlay');
+                    m.innerText = "DISTRITO LIBERADO!"; m.style.color = "var(--success)"; m.style.display = 'block';
+                    setTimeout(() => { m.style.display = 'none'; level = (level + 1) % districts.length; desistir(); }, 1500);
+                } else {
+                    document.getElementById('quiz-modal').style.display = 'none';
+                    gameOver("RESPOSTA INCORRETA!");
                 }
             };
-            div.appendChild(b);
+            opts.appendChild(b);
         });
         document.getElementById('quiz-modal').style.display = 'flex';
     }
 
     function loop() {
-        if(gameActive && level < 9) {
-            const c = campaign[level];
-            ctx.fillStyle = c.bg; ctx.fillRect(0,0,canvas.width, canvas.height);
-            ctx.fillStyle = c.gr; ctx.fillRect(0, canvas.height*0.85, canvas.width, canvas.height*0.15);
+        if(gameActive) {
+            const d = districts[level];
+            ctx.fillStyle = d.bg; ctx.fillRect(0,0,canvas.width, canvas.height);
+            ctx.fillStyle = d.gr; ctx.fillRect(0, canvas.height*0.88, canvas.width, canvas.height*0.12);
             
-            // Jogador (Guardião)
-            ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(player.x, player.y, 25, 0, Math.PI*2); ctx.fill();
-            ctx.strokeStyle = "gold"; ctx.lineWidth = 4; ctx.stroke();
-            
-            items.forEach((it, i) => {
-                it.y += it.s;
-                it.x += Math.sin(it.y * it.swing) * 2;
-                if(it.y > canvas.height) { items.splice(i,1); spawn(); }
+            ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(player.x, player.y, 22, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle = "var(--gold)"; ctx.lineWidth = 3; ctx.stroke();
+
+            for(let i = items.length - 1; i >= 0; i--) {
+                let it = items[i]; it.y += it.s;
                 ctx.font = "38px Arial"; ctx.textAlign = "center";
-                ctx.fillText(it.isG ? c.icon : c.enemy, it.x, it.y);
-                if(Math.hypot(player.x-it.x, player.y-it.y) < 40) {
+                ctx.fillText(it.isG ? d.icon : d.enemy, it.x, it.y);
+                
+                if(Math.hypot(player.x - it.x, player.y - it.y) < 40) {
                     if(it.isG) { 
-                        score++; playSound(600,'sine',0.1); 
+                        score++; speedMult += 0.05; playSnd(600 + score*20, 'sine', 0.1); 
                     } else { 
-                        score = Math.max(0, score - 3); 
-                        playSound(150,'sawtooth',0.3); 
-                        triggerDamage();
+                        score = Math.max(0, score - 3); playSnd(150, 'sawtooth', 0.2);
+                        document.getElementById('damage-overlay').style.display='block'; 
+                        setTimeout(()=>document.getElementById('damage-overlay').style.display='none', 80); 
                     }
                     items.splice(i, 1); spawn(); updateUI();
                     if(score >= 10) showQuiz();
-                }
-            });
+                } else if(it.y > canvas.height + 50) { items.splice(i, 1); spawn(); }
+            }
         }
         requestAnimationFrame(loop);
     }
 
-    const mv = (e) => { 
-        player.x = e.touches ? e.touches[0].clientX : e.clientX; 
-        player.y = e.touches ? e.touches[0].clientY : e.clientY; 
-        if(e.touches) e.preventDefault(); 
+    function updateUI() {
+        document.getElementById('txt-target').innerText = `${score} / 10`;
+        const t = document.getElementById('txt-time');
+        t.innerText = timeLeft + "s";
+        t.className = timeLeft <= 5 ? "val timer-warn" : "val";
+        document.getElementById('txt-loc').innerText = districts[level].name;
+    }
+
+    const mover = (e) => {
+        const cx = e.touches ? e.touches[0].clientX : e.clientX;
+        const cy = e.touches ? e.touches[0].clientY : e.clientY;
+        player.x = cx; player.y = cy;
     };
-    window.addEventListener('touchmove', mv, {passive:false});
-    window.addEventListener('mousemove', mv);
+    window.addEventListener('mousemove', mover);
+    window.addEventListener('touchmove', (e) => { mover(e); e.preventDefault(); }, {passive:false});
     window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
+    
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
     player = { x: canvas.width/2, y: canvas.height/2 };
-    updateModal();
+    renderTabs(); updateMenu(); loop();
 </script>
 </body>
 </html>
