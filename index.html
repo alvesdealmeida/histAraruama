@@ -5,6 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Araruama: Guardião Equilibrado</title>
     <style>
+    :root { --gold: #f4d03f; --danger: #ff4757; --deep-green: #1b4d3e; --success: #2ecc71; --sand: #f5e6be; }
+    
+    body, html { 
+        margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; 
+        font-family: 'Georgia', serif; touch-action: none; 
+        
+        /* --- CÓDIGO DA IMAGEM DE FUNDO --- */
+        background-color: #000; /* Cor de fundo caso a imagem falhe */
+        background-image: 
+            linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), 
+            url('fundo.jpg'); /* Nome do arquivo que você vai subir no GitHub */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        /* ---------------------------------- */
+    }
+    
+    /* Mantém o restante do seu CSS original abaixo... */
+    #ui { position: absolute; top: 10px; left: 10px; right: 10px; color: white; z-index: 10; pointer-events: none; display: none; font-family: sans-serif; }
+    #stats { display: flex; justify-content: space-between; background: rgba(0,0,0,0.9); padding: 10px; border-radius: 12px; border: 2px solid var(--gold); }
+    /* ... (restante do código igual ao seu) */
+</style>
+    <!--
+    <style>
         :root { --gold: #f4d03f; --danger: #ff4757; --deep-green: #1b4d3e; --success: #2ecc71; --sand: #f5e6be; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Georgia', serif; touch-action: none; }
         
@@ -50,6 +75,7 @@
         
         #damage-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,0,0,0.5); display:none; pointer-events:none; z-index:5; }
     </style>
+    -->
 </head>
 <body>
 
