@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Araruama: Guardião Mobile</title>
+    <title>Araruama: Guardião Equilibrado</title>
     <style>
         :root { --gold: #f4d03f; --danger: #ff4757; --deep-green: #1b4d3e; --success: #2ecc71; --sand: #f5e6be; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Georgia', serif; touch-action: none; }
@@ -30,7 +30,7 @@
         .modal { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             display: flex; align-items: center; justify-content: center; 
-            background: rgba(0,0,0,0.9); z-index: 400; 
+            background: rgba(0,0,0,0.95); z-index: 400; 
         }
         .card { 
             background: var(--sand); width: 90%; max-width: 400px; border-radius: 15px; 
@@ -60,8 +60,8 @@
 <div id="ui">
     <div id="stats">
         <div><span class="label">DISTRITO</span><span id="txt-loc" class="val">-</span></div>
-        <div><span class="label">TEMPO</span><span id="txt-time" class="val">30s</span></div>
-        <div><span class="label">PONTOS</span><span id="txt-target" class="val">0 / 10</span></div>
+        <div><span class="label">TEMPO</span><span id="txt-time" class="val">35s</span></div>
+        <div><span class="label">RELÍQUIAS</span><span id="txt-target" class="val">0 / 10</span></div>
     </div>
 </div>
 
@@ -73,14 +73,14 @@
             <span id="m-icon" style="font-size: 3rem; display: block; margin-bottom: 5px;">🐚</span>
             <h3 id="m-title" style="margin: 5px 0;">-</h3>
             <p id="m-text" style="font-size: 0.8rem; margin-bottom: 15px; font-weight: bold;"></p>
-            <button class="btn-main" onclick="startLevel()">INICIAR JOGO</button>
+            <button class="btn-main" onclick="startLevel()">INICIAR MISSÃO</button>
         </div>
     </div>
 </div>
 
 <div id="quiz-modal" class="modal" style="display:none;">
     <div class="card">
-        <div class="card-header"><h3>DESAFIO FINAL</h3></div>
+        <div class="card-header"><h3>TESTE DE CONHECIMENTO</h3></div>
         <div class="card-body">
             <p id="q-question" style="font-weight:bold; font-size: 1rem; margin-bottom: 15px;"></p>
             <div id="q-options" style="display:flex; flex-direction:column; gap:8px;"></div>
@@ -96,15 +96,15 @@
     let audioCtx, gameTimer;
 
     const districts = [
-        { name: "Centro", title: "Sambaquis", icon: "🐚", enemy: "🦀", bg: "#87CEEB", gr: "#f4d03f", quiz: [{q: "Os Sambaquis são feitos de quê?", o: ["Conchas", "Plástico", "Vidro"], a: 0}]},
-        { name: "S. Vicente", title: "Citricultura", icon: "🍊", enemy: "🐛", bg: "#2d5a27", gr: "#8b4513", quiz: [{q: "Qual a fruta famosa de S. Vicente?", o: ["Laranja", "Maçã", "Uva"], a: 0}]},
-        { name: "Laguna", title: "Ciclo do Sal", icon: "🧂", enemy: "⛈️", bg: "#0077be", gr: "#eee", quiz: [{q: "O que movia os moinhos de sal?", o: ["Vento", "Motor", "Cavalos"], a: 0}]},
-        { name: "Praia Seca", title: "Restinga", icon: "🏄", enemy: "☀️", bg: "#00a8ff", gr: "#f5e6be", quiz: [{q: "Onde fica Praia Seca?", o: ["Massambaba", "Centro", "Rio"], a: 0}]},
-        { name: "Iguabinha", title: "Águas Calmas", icon: "🛶", enemy: "🦟", bg: "#48dbfb", gr: "#2ecc71", quiz: [{q: "Como é a água em Iguabinha?", o: ["Calma", "Agitada", "Gelada"], a: 0}]},
-        { name: "M. Grande", title: "Rural", icon: "🐎", enemy: "🚜", bg: "#57606f", gr: "#2f3542", quiz: [{q: "Qual a atividade de Morro Grande?", o: ["Agropecuária", "Surf", "Indústria"], a: 0}]}
+        { name: "Centro", title: "Sambaquis", icon: "🐚", enemy: "🦀", bg: "#87CEEB", gr: "#f4d03f", quiz: [{q: "Onde se localiza o museu arqueológico?", o: ["Praia Seca", "Centro (Sambaqui)", "S. Vicente"], a: 1}]},
+        { name: "S. Vicente", title: "Citricultura", icon: "🍊", enemy: "🐛", bg: "#2d5a27", gr: "#8b4513", quiz: [{q: "A citricultura baseava-se em qual fruta?", o: ["Manga", "Laranja", "Caju"], a: 1}]},
+        { name: "Laguna", title: "Ciclo do Sal", icon: "🧂", enemy: "⛈️", bg: "#0077be", gr: "#eee", quiz: [{q: "O sal vinha das águas de qual lagoa?", o: ["Juturnaíba", "Araruama", "Saquarema"], a: 1}]},
+        { name: "Praia Seca", title: "Restinga", icon: "🏄", enemy: "☀️", bg: "#00a8ff", gr: "#f5e6be", quiz: [{q: "Praia Seca fica entre a Lagoa e o...", o: ["Rio", "Oceano Atlântico", "Pântano"], a: 1}]},
+        { name: "Iguabinha", title: "Águas Calmas", icon: "🛶", enemy: "🦟", bg: "#48dbfb", gr: "#2ecc71", quiz: [{q: "As águas de Iguabinha são famosas por serem?", o: ["Calmas e Medicinais", "Turvas", "Onduladas"], a: 0}]},
+        { name: "M. Grande", title: "Rural", icon: "🐎", enemy: "🚜", bg: "#57606f", gr: "#2f3542", quiz: [{q: "Qual a vocação de Morro Grande?", o: ["Agropecuária", "Salina", "Pesca"], a: 0}]}
     ];
 
-    let level = 0, score = 0, timeLeft = 30, gameActive = false, speedMult = 0.8;
+    let level = 0, score = 0, timeLeft = 35, gameActive = false, speedMult = 0.6;
     let player = { x: 0, y: 0 }; let items = [];
 
     function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
@@ -134,7 +134,7 @@
         const d = districts[level];
         document.getElementById('m-icon').innerText = d.icon;
         document.getElementById('m-title').innerText = d.title;
-        document.getElementById('m-text').innerText = `Capture 10 ${d.icon} para vencer!`;
+        document.getElementById('m-text').innerText = `Colete 10 ${d.icon} para o Quiz final!`;
     }
 
     function startLevel() {
@@ -142,17 +142,18 @@
         document.getElementById('modal').style.display = 'none';
         document.getElementById('ui').style.display = 'block';
         document.getElementById('btn-desistir').style.display = 'flex';
-        score = 0; items = []; timeLeft = 30; 
+        score = 0; items = []; timeLeft = 35; 
         
-        // 1. VELOCIDADE INICIAL REDUZIDA PARA MOBILE
-        speedMult = 0.8 + (level * 0.05); 
+        // VELOCIDADE RAZOÁVEL NO INÍCIO (Ajustada para mobile)
+        // O multiplicador começa em 0.6 e sobe 0.05 por distrito liberado.
+        speedMult = 0.6 + (level * 0.05); 
         
         gameActive = true;
         updateUI();
         clearInterval(gameTimer);
         gameTimer = setInterval(() => {
             timeLeft--;
-            if(timeLeft <= 0) gameOver("TEMPO ESGOTADO!");
+            if(timeLeft <= 0) gameOver("FIM DO TEMPO!");
             updateUI();
         }, 1000);
         for(let i=0; i<6; i++) spawn(true);
@@ -160,12 +161,14 @@
 
     function spawn(init = false) {
         if (!gameActive && !init) return;
+        // Velocidade base suave + variação aleatória pequena
+        let baseSpeed = 3.5 + Math.random() * 3;
+        
         items.push({ 
             x: Math.random() * (canvas.width - 60) + 30, 
             y: init ? (Math.random() * -canvas.height) : -50, 
             isG: Math.random() > 0.45,
-            // 2. VELOCIDADE DE QUEDA BASE REDUZIDA
-            s: (4 + Math.random() * 4) * speedMult
+            s: baseSpeed * speedMult
         });
     }
 
@@ -201,11 +204,11 @@
                 if(i === q.a) {
                     playSnd(800, 'sine', 0.5);
                     const m = document.getElementById('msg-overlay');
-                    m.innerText = "PARABÉNS!"; m.style.color = "var(--success)"; m.style.display = 'block';
+                    m.innerText = "EXCELENTE!"; m.style.color = "var(--success)"; m.style.display = 'block';
                     setTimeout(() => { m.style.display = 'none'; level = (level + 1) % districts.length; desistir(); }, 1500);
                 } else {
                     document.getElementById('quiz-modal').style.display = 'none';
-                    gameOver("ERROU!");
+                    gameOver("OPS! TENTE NOVAMENTE.");
                 }
             };
             opts.appendChild(b);
@@ -219,8 +222,8 @@
             ctx.fillStyle = d.bg; ctx.fillRect(0,0,canvas.width, canvas.height);
             ctx.fillStyle = d.gr; ctx.fillRect(0, canvas.height*0.88, canvas.width, canvas.height*0.12);
             
-            // Jogador (Seguindo o toque/mouse)
-            ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(player.x, player.y, 25, 0, Math.PI*2); ctx.fill();
+            // Personagem (Aura branca suave)
+            ctx.fillStyle = "rgba(255,255,255,0.8)"; ctx.beginPath(); ctx.arc(player.x, player.y, 25, 0, Math.PI*2); ctx.fill();
             ctx.strokeStyle = "var(--gold)"; ctx.lineWidth = 3; ctx.stroke();
 
             for(let i = items.length - 1; i >= 0; i--) {
@@ -231,8 +234,16 @@
                 if(Math.hypot(player.x - it.x, player.y - it.y) < 45) {
                     if(it.isG) { 
                         score++; 
-                        // 3. TURBO SUAVE PARA NÃO FICAR IMPOSSÍVEL
-                        speedMult += 0.02; 
+                        
+                        // ACELERAÇÃO DA PARTIDA:
+                        // Se estiver no final (8 ou 9 pontos), acelera mais rápido (0.08)
+                        // Se estiver no início, acelera suavemente (0.02)
+                        if (score >= 8) {
+                            speedMult += 0.08; 
+                        } else {
+                            speedMult += 0.02;
+                        }
+                        
                         playSnd(500 + score*20, 'sine', 0.1); 
                     } else { 
                         score = Math.max(0, score - 2); playSnd(150, 'sawtooth', 0.2);
