@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Araruama: Guardião de Elite</title>
+    <title>Araruama: Guardião Velocidade Máxima</title>
     <style>
         :root { --gold: #f4d03f; --danger: #ff4757; --deep-green: #1b4d3e; --success: #2ecc71; --sand: #f5e6be; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Georgia', serif; touch-action: none; }
@@ -18,7 +18,7 @@
             background: #a00000; border: 4px solid var(--gold); border-radius: 50%;
             color: white; font-size: 2rem; display: none; align-items: center; 
             justify-content: center; z-index: 500; cursor: pointer;
-            box-shadow: 0 0 20px rgba(255,0,0,0.4);
+            box-shadow: 0 0 20px rgba(255,0,0,0.6);
         }
 
         #msg-overlay { 
@@ -35,7 +35,6 @@
         .card { 
             background: var(--sand); width: 92%; max-width: 420px; border-radius: 20px; 
             overflow: hidden; text-align: center; border: 5px solid var(--deep-green);
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
         }
         .card-header { background: var(--deep-green); color: var(--gold); padding: 15px; }
         .card-body { padding: 20px; color: var(--deep-green); }
@@ -68,20 +67,20 @@
 
 <div id="modal" class="modal">
     <div class="card">
-        <div class="card-header"><h2>MODO GUARDIÃO: ALTA VELOCIDADE</h2></div>
+        <div class="card-header"><h2>VELOCIDADE MÁXIMA</h2></div>
         <div class="card-body">
             <div class="tabs-grid" id="tabs-container"></div>
             <span id="m-icon" style="font-size: 4rem; display: block; margin-bottom: 10px;">🐚</span>
-            <h3 id="m-title" style="margin: 5px 0; letter-spacing: 1px;">-</h3>
+            <h3 id="m-title" style="margin: 5px 0;">-</h3>
             <p id="m-text" style="font-size: 0.9rem; margin-bottom: 20px; font-weight: bold;"></p>
-            <button class="btn-main" onclick="startLevel()">INICIAR DESAFIO</button>
+            <button class="btn-main" onclick="startLevel()">INICIAR MISSÃO</button>
         </div>
     </div>
 </div>
 
 <div id="quiz-modal" class="modal" style="display:none;">
     <div class="card">
-        <div class="card-header"><h3>PROVA DE HONRA</h3></div>
+        <div class="card-header"><h3>DESAFIO FINAL</h3></div>
         <div class="card-body">
             <p id="q-question" style="font-weight:bold; font-size: 1.2rem; margin-bottom: 20px;"></p>
             <div id="q-options" style="display:flex; flex-direction:column; gap:10px;"></div>
@@ -98,30 +97,27 @@
 
     const districts = [
         { name: "Centro", title: "Sambaquis", icon: "🐚", enemy: "🦀", bg: "#87CEEB", gr: "#f4d03f", quiz: [
-            {q: "O que significa Sambaqui?", o: ["Amontoado de conchas", "Casa de areia", "Pedra furada"], a: 0},
-            {q: "Qual a função dos Sambaquis?", o: ["Moradia e sepultamento", "Defesa militar", "Estoque de sal"], a: 0}
+            {q: "Sambaquis são amontoados de quê?", o: ["Conchas", "Pedra sabão", "Madeira"], a: 0},
+            {q: "O museu de Araruama é sobre?", o: ["Arqueologia", "Astronomia", "Moda"], a: 0}
         ]},
         { name: "S. Vicente", title: "Citricultura", icon: "🍊", enemy: "🐛", bg: "#2d5a27", gr: "#8b4513", quiz: [
-            {q: "S. Vicente era famoso por qual fruta?", o: ["Laranja", "Limão", "Maçã"], a: 0},
-            {q: "O que causou o fim do ciclo da laranja?", o: ["Praga 'Gorgulho'", "Falta de chuva", "Geada"], a: 0}
+            {q: "Qual era a maior produção de S. Vicente?", o: ["Laranja", "Cacau", "Arroz"], a: 0}
         ]},
         { name: "Laguna", title: "Ciclo do Sal", icon: "🧂", enemy: "⛈️", bg: "#0077be", gr: "#eee", quiz: [
-            {q: "Como o sal era extraído?", o: ["Evaporação solar", "Mineração", "Fervura"], a: 0},
-            {q: "O que girava os moinhos?", o: ["Ventos constantes", "Motores elétricos", "Rios"], a: 0}
+            {q: "O sal de Araruama era extraído da?", o: ["Lagoa", "Mina subterrânea", "Chuva"], a: 0}
         ]},
         { name: "Praia Seca", title: "Restinga", icon: "🏄", enemy: "☀️", bg: "#00a8ff", gr: "#f5e6be", quiz: [
-            {q: "Praia Seca fica em qual restinga?", o: ["Massambaba", "Marambaia", "Recreio"], a: 0},
-            {q: "O que banha o lado de fora do distrito?", o: ["Oceano Atlântico", "Baía de Guanabara", "Rio Paraíba"], a: 0}
+            {q: "Qual oceano banha Praia Seca?", o: ["Atlântico", "Pacífico", "Índico"], a: 0}
         ]},
         { name: "Iguabinha", title: "Águas Calmas", icon: "🛶", enemy: "🦟", bg: "#48dbfb", gr: "#2ecc71", quiz: [
-            {q: "Qual a fama das águas de Iguabinha?", o: ["Medicinais e calmas", "Geladas", "Ondas gigantes"], a: 0}
+            {q: "A água de Iguabinha é famosa por ser?", o: ["Calma", "Muito funda", "Gelada"], a: 0}
         ]},
         { name: "M. Grande", title: "Rural", icon: "🐎", enemy: "🚜", bg: "#57606f", gr: "#2f3542", quiz: [
-            {q: "Qual o foco econômico local?", o: ["Agropecuária", "Indústria têxtil", "Tecnologia"], a: 0}
+            {q: "A economia local foca em?", o: ["Agropecuária", "Salinas", "Turismo de neve"], a: 0}
         ]}
     ];
 
-    let level = 0, score = 0, timeLeft = 25, gameActive = false, speedMult = 1.3;
+    let level = 0, score = 0, timeLeft = 25, gameActive = false, speedMult = 1.6;
     let player = { x: 0, y: 0 }; let items = [];
 
     function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
@@ -151,7 +147,7 @@
         const d = districts[level];
         document.getElementById('m-icon').innerText = d.icon;
         document.getElementById('m-title').innerText = d.title;
-        document.getElementById('m-text').innerText = `DESAFIO: Capture 10 itens em alta velocidade!`;
+        document.getElementById('m-text').innerText = `MODO HARDCORE: Capture 10 itens!`;
     }
 
     function startLevel() {
@@ -161,15 +157,15 @@
         document.getElementById('btn-desistir').style.display = 'flex';
         score = 0; items = []; timeLeft = 25; 
         
-        // VELOCIDADE MÉDIA-ALTA NO INÍCIO
-        speedMult = 1.3 + (level * 0.15); 
+        // VELOCIDADE INICIAL LENDÁRIA
+        speedMult = 1.6 + (level * 0.2); 
         
         gameActive = true;
         updateUI();
         clearInterval(gameTimer);
         gameTimer = setInterval(() => {
             timeLeft--;
-            if(timeLeft <= 0) gameOver("TEMPO ESGOTADO!");
+            if(timeLeft <= 0) gameOver("FIM DE JOGO!");
             updateUI();
         }, 1000);
         for(let i=0; i<8; i++) spawn(true);
@@ -177,13 +173,13 @@
 
     function spawn(init = false) {
         if (!gameActive && !init) return;
-        // Base Speed firme para sensação de peso
-        let baseSpeed = 7.0 + Math.random() * 5;
+        // Velocidade base agressiva (10.0)
+        let baseSpeed = 10.0 + Math.random() * 6;
         
         items.push({ 
             x: Math.random() * (canvas.width - 60) + 30, 
             y: init ? (Math.random() * -canvas.height) : -50, 
-            isG: Math.random() > 0.42,
+            isG: Math.random() > 0.4,
             s: baseSpeed * speedMult
         });
     }
@@ -220,11 +216,11 @@
                 if(i === q.a) {
                     playSnd(800, 'sine', 0.5);
                     const m = document.getElementById('msg-overlay');
-                    m.innerText = "DISTRITO CONQUISTADO!"; m.style.color = "var(--success)"; m.style.display = 'block';
-                    setTimeout(() => { m.style.display = 'none'; level = (level + 1) % districts.length; desistir(); }, 1800);
+                    m.innerText = "VITÓRIA!"; m.style.color = "var(--success)"; m.style.display = 'block';
+                    setTimeout(() => { m.style.display = 'none'; level = (level + 1) % districts.length; desistir(); }, 1500);
                 } else {
                     document.getElementById('quiz-modal').style.display = 'none';
-                    gameOver("ERRO CRÍTICO!");
+                    gameOver("ERRO!");
                 }
             };
             opts.appendChild(b);
@@ -238,11 +234,9 @@
             ctx.fillStyle = d.bg; ctx.fillRect(0,0,canvas.width, canvas.height);
             ctx.fillStyle = d.gr; ctx.fillRect(0, canvas.height*0.88, canvas.width, canvas.height*0.12);
             
-            // Jogador (Ponto de luz vibrante)
-            ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(player.x, player.y, 24, 0, Math.PI*2); ctx.fill();
-            ctx.shadowBlur = 15; ctx.shadowColor = "white";
+            // Jogador
+            ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(player.x, player.y, 25, 0, Math.PI*2); ctx.fill();
             ctx.strokeStyle = "var(--gold)"; ctx.lineWidth = 3; ctx.stroke();
-            ctx.shadowBlur = 0;
 
             for(let i = items.length - 1; i >= 0; i--) {
                 let it = items[i]; it.y += it.s;
@@ -252,9 +246,9 @@
                 if(Math.hypot(player.x - it.x, player.y - it.y) < 45) {
                     if(it.isG) { 
                         score++; 
-                        // ACELERAÇÃO AGRESSIVA POR PONTO
-                        speedMult += 0.06; 
-                        playSnd(600 + score*30, 'sine', 0.1); 
+                        // ACELERAÇÃO TURBO POR PONTO
+                        speedMult += 0.08; 
+                        playSnd(600 + score*40, 'sine', 0.1); 
                     } else { 
                         score = Math.max(0, score - 3); playSnd(150, 'sawtooth', 0.2);
                         document.getElementById('damage-overlay').style.display='block'; 
