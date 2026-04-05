@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Araruama: Guardião Velocidade Máxima</title>
+    <title>Araruama: Guardião Pro 8.4</title>
     <style>
         :root { --gold: #f4d03f; --danger: #ff4757; --deep-green: #1b4d3e; --success: #2ecc71; --sand: #f5e6be; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Georgia', serif; touch-action: none; }
@@ -18,7 +18,7 @@
             background: #a00000; border: 4px solid var(--gold); border-radius: 50%;
             color: white; font-size: 2rem; display: none; align-items: center; 
             justify-content: center; z-index: 500; cursor: pointer;
-            box-shadow: 0 0 20px rgba(255,0,0,0.6);
+            box-shadow: 0 0 15px rgba(255,0,0,0.5);
         }
 
         #msg-overlay { 
@@ -30,7 +30,7 @@
         .modal { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             display: flex; align-items: center; justify-content: center; 
-            background: rgba(0,0,0,0.92); z-index: 400; 
+            background: rgba(0,0,0,0.9); z-index: 400; 
         }
         .card { 
             background: var(--sand); width: 92%; max-width: 420px; border-radius: 20px; 
@@ -67,7 +67,7 @@
 
 <div id="modal" class="modal">
     <div class="card">
-        <div class="card-header"><h2>VELOCIDADE MÁXIMA</h2></div>
+        <div class="card-header"><h2>DISTRITOS DE ARARUAMA</h2></div>
         <div class="card-body">
             <div class="tabs-grid" id="tabs-container"></div>
             <span id="m-icon" style="font-size: 4rem; display: block; margin-bottom: 10px;">🐚</span>
@@ -80,7 +80,7 @@
 
 <div id="quiz-modal" class="modal" style="display:none;">
     <div class="card">
-        <div class="card-header"><h3>DESAFIO FINAL</h3></div>
+        <div class="card-header"><h3>DESAFIO DE HISTÓRIA</h3></div>
         <div class="card-body">
             <p id="q-question" style="font-weight:bold; font-size: 1.2rem; margin-bottom: 20px;"></p>
             <div id="q-options" style="display:flex; flex-direction:column; gap:10px;"></div>
@@ -97,27 +97,27 @@
 
     const districts = [
         { name: "Centro", title: "Sambaquis", icon: "🐚", enemy: "🦀", bg: "#87CEEB", gr: "#f4d03f", quiz: [
-            {q: "Sambaquis são amontoados de quê?", o: ["Conchas", "Pedra sabão", "Madeira"], a: 0},
-            {q: "O museu de Araruama é sobre?", o: ["Arqueologia", "Astronomia", "Moda"], a: 0}
+            {q: "O que compõe os Sambaquis?", o: ["Conchas e vestígios", "Apenas pedras", "Plástico"], a: 0},
+            {q: "O Museu Arqueológico fica no?", o: ["Centro (Sambaqui)", "Iguabinha", "Morro Grande"], a: 0}
         ]},
         { name: "S. Vicente", title: "Citricultura", icon: "🍊", enemy: "🐛", bg: "#2d5a27", gr: "#8b4513", quiz: [
-            {q: "Qual era a maior produção de S. Vicente?", o: ["Laranja", "Cacau", "Arroz"], a: 0}
+            {q: "Qual era a fruta de ouro de S. Vicente?", o: ["Laranja", "Maçã", "Pêra"], a: 0}
         ]},
         { name: "Laguna", title: "Ciclo do Sal", icon: "🧂", enemy: "⛈️", bg: "#0077be", gr: "#eee", quiz: [
-            {q: "O sal de Araruama era extraído da?", o: ["Lagoa", "Mina subterrânea", "Chuva"], a: 0}
+            {q: "O que movia os moinhos de sal?", o: ["Ventos", "Motores a diesel", "Cavalos"], a: 0}
         ]},
         { name: "Praia Seca", title: "Restinga", icon: "🏄", enemy: "☀️", bg: "#00a8ff", gr: "#f5e6be", quiz: [
-            {q: "Qual oceano banha Praia Seca?", o: ["Atlântico", "Pacífico", "Índico"], a: 0}
+            {q: "Praia Seca fica entre a Lagoa e o?", o: ["Oceano Atlântico", "Rio", "Pântano"], a: 0}
         ]},
         { name: "Iguabinha", title: "Águas Calmas", icon: "🛶", enemy: "🦟", bg: "#48dbfb", gr: "#2ecc71", quiz: [
-            {q: "A água de Iguabinha é famosa por ser?", o: ["Calma", "Muito funda", "Gelada"], a: 0}
+            {q: "As águas de Iguabinha são?", o: ["Calmas e Medicinais", "Bravas", "Poluídas"], a: 0}
         ]},
         { name: "M. Grande", title: "Rural", icon: "🐎", enemy: "🚜", bg: "#57606f", gr: "#2f3542", quiz: [
-            {q: "A economia local foca em?", o: ["Agropecuária", "Salinas", "Turismo de neve"], a: 0}
+            {q: "Morro Grande se destaca na?", o: ["Agropecuária", "Pesca de alto mar", "Mineração"], a: 0}
         ]}
     ];
 
-    let level = 0, score = 0, timeLeft = 25, gameActive = false, speedMult = 1.6;
+    let level = 0, score = 0, timeLeft = 25, gameActive = false, speedMult = 1.4;
     let player = { x: 0, y: 0 }; let items = [];
 
     function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
@@ -147,7 +147,7 @@
         const d = districts[level];
         document.getElementById('m-icon').innerText = d.icon;
         document.getElementById('m-title').innerText = d.title;
-        document.getElementById('m-text').innerText = `MODO HARDCORE: Capture 10 itens!`;
+        document.getElementById('m-text').innerText = `DESAFIO: Capture 10 itens!`;
     }
 
     function startLevel() {
@@ -157,15 +157,15 @@
         document.getElementById('btn-desistir').style.display = 'flex';
         score = 0; items = []; timeLeft = 25; 
         
-        // VELOCIDADE INICIAL LENDÁRIA
-        speedMult = 1.6 + (level * 0.2); 
+        // PARAMETRO SOLICITADO: MULTIPLICADOR 1.4
+        speedMult = 1.4 + (level * 0.1); 
         
         gameActive = true;
         updateUI();
         clearInterval(gameTimer);
         gameTimer = setInterval(() => {
             timeLeft--;
-            if(timeLeft <= 0) gameOver("FIM DE JOGO!");
+            if(timeLeft <= 0) gameOver("FIM DO TEMPO!");
             updateUI();
         }, 1000);
         for(let i=0; i<8; i++) spawn(true);
@@ -173,8 +173,8 @@
 
     function spawn(init = false) {
         if (!gameActive && !init) return;
-        // Velocidade base agressiva (10.0)
-        let baseSpeed = 10.0 + Math.random() * 6;
+        // PARAMETRO SOLICITADO: VELOCIDADE BÁSICA 8.0
+        let baseSpeed = 8.0 + Math.random() * 4;
         
         items.push({ 
             x: Math.random() * (canvas.width - 60) + 30, 
@@ -216,11 +216,11 @@
                 if(i === q.a) {
                     playSnd(800, 'sine', 0.5);
                     const m = document.getElementById('msg-overlay');
-                    m.innerText = "VITÓRIA!"; m.style.color = "var(--success)"; m.style.display = 'block';
+                    m.innerText = "SÁBIO!"; m.style.color = "var(--success)"; m.style.display = 'block';
                     setTimeout(() => { m.style.display = 'none'; level = (level + 1) % districts.length; desistir(); }, 1500);
                 } else {
                     document.getElementById('quiz-modal').style.display = 'none';
-                    gameOver("ERRO!");
+                    gameOver("TENTE NOVAMENTE!");
                 }
             };
             opts.appendChild(b);
@@ -234,7 +234,7 @@
             ctx.fillStyle = d.bg; ctx.fillRect(0,0,canvas.width, canvas.height);
             ctx.fillStyle = d.gr; ctx.fillRect(0, canvas.height*0.88, canvas.width, canvas.height*0.12);
             
-            // Jogador
+            // Jogador (Orb Branco)
             ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(player.x, player.y, 25, 0, Math.PI*2); ctx.fill();
             ctx.strokeStyle = "var(--gold)"; ctx.lineWidth = 3; ctx.stroke();
 
@@ -246,9 +246,9 @@
                 if(Math.hypot(player.x - it.x, player.y - it.y) < 45) {
                     if(it.isG) { 
                         score++; 
-                        // ACELERAÇÃO TURBO POR PONTO
-                        speedMult += 0.08; 
-                        playSnd(600 + score*40, 'sine', 0.1); 
+                        // Aceleração progressiva por ponto para manter o desafio
+                        speedMult += 0.05; 
+                        playSnd(600 + score*30, 'sine', 0.1); 
                     } else { 
                         score = Math.max(0, score - 3); playSnd(150, 'sawtooth', 0.2);
                         document.getElementById('damage-overlay').style.display='block'; 
