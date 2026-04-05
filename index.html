@@ -171,7 +171,7 @@
         document.getElementById('modal').style.display = 'none';
         document.getElementById('ui').style.display = 'block';
         document.getElementById('btn-desistir').style.display = 'flex'; // APARECE O BOTÃO
-        score = 0; items = []; timeLeft = 25; speedMult = 1.5 + (level * 0.1); gameActive = true;
+        score = 0; items = []; timeLeft = 25; speedMult = 1.0 + (level * 0.1); gameActive = true;
         updateUI();
         clearInterval(gameTimer);
         gameTimer = setInterval(() => {
