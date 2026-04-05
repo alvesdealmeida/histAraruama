@@ -3,73 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Araruama: Expedição Zen Atualizada</title>
+    <title>Araruama: Guardião Equilibrado</title>
     <style>
         :root { --gold: #f4d03f; --danger: #ff4757; --deep-green: #1b4d3e; --success: #2ecc71; --sand: #f5e6be; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: sans-serif; touch-action: none; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Georgia', serif; touch-action: none; }
         
-        #ui { position: absolute; top: 10px; left: 10px; right: 10px; color: white; z-index: 10; pointer-events: none; display: none; }
-        #stats { display: flex; justify-content: space-between; background: rgba(0,0,0,0.7); padding: 10px; border-radius: 12px; border: 2px solid var(--gold); }
+        #ui { position: absolute; top: 10px; left: 10px; right: 10px; color: white; z-index: 10; pointer-events: none; display: none; font-family: sans-serif; }
+        #stats { display: flex; justify-content: space-between; background: rgba(0,0,0,0.9); padding: 10px; border-radius: 12px; border: 2px solid var(--gold); }
         .label { color: var(--gold); font-size: 0.6rem; display: block; text-transform: uppercase; }
         .val { font-size: 1rem; font-weight: bold; }
 
         #btn-desistir {
-            position: absolute; bottom: 20px; right: 20px; width: 50px; height: 50px; 
-            background: #a00000; border: 2px solid var(--gold); border-radius: 50%;
-            color: white; font-size: 1.2rem; display: none; align-items: center; 
-            justify-content: center; z-index: 500;
+            position: absolute; bottom: 25px; right: 20px; width: 60px; height: 60px; 
+            background: #800000; border: 3px solid var(--gold); border-radius: 50%;
+            color: white; font-size: 1.8rem; display: none; align-items: center; 
+            justify-content: center; z-index: 500; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
         }
 
         #msg-overlay { 
             position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 1.8rem; font-weight: bold; display: none; z-index: 600;
-            text-shadow: 2px 2px 4px #000; text-align: center; width: 80%;
+            font-size: 2rem; font-weight: bold; display: none; z-index: 600;
+            text-shadow: 2px 2px 0px #000; pointer-events: none; text-align: center; width: 90%;
         }
 
         .modal { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             display: flex; align-items: center; justify-content: center; 
-            background: rgba(0,0,0,0.8); z-index: 400; 
+            background: rgba(0,0,0,0.95); z-index: 400; 
         }
         .card { 
-            background: var(--sand); width: 85%; max-width: 350px; border-radius: 15px; 
-            overflow: hidden; text-align: center; border: 3px solid var(--deep-green);
+            background: var(--sand); width: 90%; max-width: 400px; border-radius: 15px; 
+            overflow: hidden; text-align: center; border: 4px solid var(--deep-green);
         }
-        .card-header { background: var(--deep-green); color: var(--gold); padding: 10px; }
+        .card-header { background: var(--deep-green); color: var(--gold); padding: 12px; }
         .card-body { padding: 15px; color: var(--deep-green); }
 
-        .tabs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 10px; }
-        .tab { padding: 6px; background: rgba(0,0,0,0.1); font-size: 0.6rem; cursor: pointer; border-radius: 5px; font-weight: bold; }
-        .tab.active { background: var(--deep-green); color: var(--gold); }
+        .tabs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 15px; }
+        .tab { padding: 8px; background: rgba(0,0,0,0.1); font-size: 0.6rem; cursor: pointer; border-radius: 4px; font-weight: bold; border: 1px solid transparent; }
+        .tab.active { background: var(--deep-green); color: var(--gold); border-color: var(--gold); }
 
         .btn-main { 
             background: var(--deep-green); color: var(--gold); padding: 12px; border: none; 
-            border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer;
+            border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1rem;
         }
+        
+        #damage-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,0,0,0.5); display:none; pointer-events:none; z-index:5; }
     </style>
 </head>
 <body>
 
+<div id="damage-overlay"></div>
 <div id="msg-overlay"></div>
 <div id="btn-desistir" onclick="desistir()">🚪</div>
 
 <div id="ui">
     <div id="stats">
-        <div><span class="label">📍 LOCAL</span><span id="txt-loc" class="val">-</span></div>
-        <div><span class="label">⏳ TEMPO</span><span id="txt-time" class="val">60s</span></div>
-        <div><span class="label">⭐ PONTOS</span><span id="txt-target" class="val">0/10</span></div>
+        <div><span class="label">DISTRITO</span><span id="txt-loc" class="val">-</span></div>
+        <div><span class="label">TEMPO</span><span id="txt-time" class="val">35s</span></div>
+        <div><span class="label">RELÍQUIAS</span><span id="txt-target" class="val">0 / 10</span></div>
     </div>
 </div>
 
 <div id="modal" class="modal">
     <div class="card">
-        <div class="card-header"><h4>MODO TRANQUILO</h4></div>
+        <div class="card-header"><h2>DISTRITOS DE ARARUAMA</h2></div>
         <div class="card-body">
             <div class="tabs-grid" id="tabs-container"></div>
-            <span id="m-icon" style="font-size: 2.5rem; display: block; margin: 10px 0;">🐚</span>
+            <span id="m-icon" style="font-size: 3rem; display: block; margin-bottom: 5px;">🐚</span>
             <h3 id="m-title" style="margin: 5px 0;">-</h3>
-            <p id="m-text" style="font-size: 0.8rem; margin-bottom: 15px;">Colete os itens no seu tempo.</p>
-            <button class="btn-main" onclick="startLevel()">INICIAR</button>
+            <p id="m-text" style="font-size: 0.8rem; margin-bottom: 15px; font-weight: bold;"></p>
+            <button class="btn-main" onclick="startLevel()">INICIAR MISSÃO</button>
+        </div>
+    </div>
+</div>
+
+<div id="quiz-modal" class="modal" style="display:none;">
+    <div class="card">
+        <div class="card-header"><h3>TESTE DE CONHECIMENTO</h3></div>
+        <div class="card-body">
+            <p id="q-question" style="font-weight:bold; font-size: 1rem; margin-bottom: 15px;"></p>
+            <div id="q-options" style="display:flex; flex-direction:column; gap:8px;"></div>
         </div>
     </div>
 </div>
@@ -79,19 +93,30 @@
 <script>
     const canvas = document.getElementById('game');
     const ctx = canvas.getContext('2d');
-    let gameTimer;
+    let audioCtx, gameTimer;
 
     const districts = [
-        { name: "Centro", title: "Sambaquis", icon: "🐚", enemy: "🦀", bg: "#87CEEB", gr: "#f4d03f" },
-        { name: "S. Vicente", title: "Laranjas", icon: "🍊", enemy: "🐛", bg: "#2d5a27", gr: "#8b4513" },
-        { name: "Laguna", title: "Salinas", icon: "🧂", enemy: "⛈️", bg: "#0077be", gr: "#eee" },
-        { name: "Praia Seca", title: "Mar e Lagoa", icon: "🏄", enemy: "☀️", bg: "#00a8ff", gr: "#f5e6be" },
-        { name: "Iguabinha", title: "Águas Rasas", icon: "🛶", enemy: "🦟", bg: "#48dbfb", gr: "#2ecc71" },
-        { name: "M. Grande", title: "Fazendas", icon: "🐎", enemy: "🚜", bg: "#57606f", gr: "#2f3542" }
+        { name: "Centro", title: "Sambaquis", icon: "🐚", enemy: "🦀", bg: "#87CEEB", gr: "#f4d03f", quiz: [{q: "Onde se localiza o museu arqueológico?", o: ["Praia Seca", "Centro (Sambaqui)", "S. Vicente"], a: 1}]},
+        { name: "S. Vicente", title: "Citricultura", icon: "🍊", enemy: "🐛", bg: "#2d5a27", gr: "#8b4513", quiz: [{q: "A citricultura baseava-se em qual fruta?", o: ["Manga", "Laranja", "Caju"], a: 1}]},
+        { name: "Laguna", title: "Ciclo do Sal", icon: "🧂", enemy: "⛈️", bg: "#0077be", gr: "#eee", quiz: [{q: "O sal vinha das águas de qual lagoa?", o: ["Juturnaíba", "Araruama", "Saquarema"], a: 1}]},
+        { name: "Praia Seca", title: "Restinga", icon: "🏄", enemy: "☀️", bg: "#00a8ff", gr: "#f5e6be", quiz: [{q: "Praia Seca fica entre a Lagoa e o...", o: ["Rio", "Oceano Atlântico", "Pântano"], a: 1}]},
+        { name: "Iguabinha", title: "Águas Calmas", icon: "🛶", enemy: "🦟", bg: "#48dbfb", gr: "#2ecc71", quiz: [{q: "As águas de Iguabinha são famosas por serem?", o: ["Calmas e Medicinais", "Turvas", "Onduladas"], a: 0}]},
+        { name: "M. Grande", title: "Rural", icon: "🐎", enemy: "🚜", bg: "#57606f", gr: "#2f3542", quiz: [{q: "Qual a vocação de Morro Grande?", o: ["Agropecuária", "Salina", "Pesca"], a: 0}]}
     ];
 
-    let level = 0, score = 0, timeLeft = 60, gameActive = false, speedMult = 0.8;
+    let level = 0, score = 0, timeLeft = 35, gameActive = false, speedMult = 1.0;
     let player = { x: 0, y: 0 }; let items = [];
+
+    function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    function playSnd(f, t, d, v=0.1) {
+        if(!audioCtx) return;
+        const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+        o.type = t; o.frequency.setValueAtTime(f, audioCtx.currentTime);
+        g.gain.setValueAtTime(v, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + d);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(); o.stop(audioCtx.currentTime + d);
+    }
 
     function renderTabs() {
         const container = document.getElementById('tabs-container');
@@ -99,7 +124,7 @@
         districts.forEach((d, i) => {
             const t = document.createElement('div');
             t.className = `tab ${i === level ? 'active' : ''}`;
-            t.innerText = d.name.split(' ')[0];
+            t.innerText = d.name.toUpperCase();
             t.onclick = () => { level = i; renderTabs(); updateMenu(); };
             container.appendChild(t);
         });
@@ -109,14 +134,19 @@
         const d = districts[level];
         document.getElementById('m-icon').innerText = d.icon;
         document.getElementById('m-title').innerText = d.title;
+        document.getElementById('m-text').innerText = `Colete 10 ${d.icon} para o Quiz final!`;
     }
 
     function startLevel() {
+        initAudio();
         document.getElementById('modal').style.display = 'none';
         document.getElementById('ui').style.display = 'block';
         document.getElementById('btn-desistir').style.display = 'flex';
-        score = 0; items = []; timeLeft = 60; 
-        speedMult = 0.8; 
+        score = 0; items = []; timeLeft = 35; 
+        
+        // Mantemos o speedMult base do distrito, mas o cálculo de velocidade vem do anexo
+        speedMult = 1.0; 
+        
         gameActive = true;
         updateUI();
         clearInterval(gameTimer);
@@ -125,28 +155,28 @@
             if(timeLeft <= 0) gameOver("FIM DO TEMPO!");
             updateUI();
         }, 1000);
-        
-        // Quantidade de objetos atualizada para 12
-        for(let i=0; i<12; i++) spawn(true); 
+
+        // DADO DO ANEXO: QUANTIDADE DE OBJETOS = 12
+        for(let i=0; i<12; i++) spawn(true);
     }
 
     function spawn(init = false) {
         if (!gameActive && !init) return;
         
-        // Velocidade atualizada com base na lógica do anexo
-        // s: (2 + (level * 0.5)) + Math.random() * 2
-        let baseSpeed = (2 + (level * 0.5)) + Math.random() * 2; 
+        // DADO DO ANEXO: Lógica de Velocidade (s)
+        let baseSpeed = (2 + (level * 0.5)) + Math.random() * 2;
         
         items.push({ 
             x: Math.random() * (canvas.width - 60) + 30, 
-            y: init ? (Math.random() * -canvas.height) : -40, 
-            isG: Math.random() > 0.4,
-            s: baseSpeed // Atribuindo a nova velocidade calculada[cite: 2]
+            y: init ? (Math.random() * -canvas.height) : -50, 
+            isG: Math.random() > 0.45,
+            s: baseSpeed
         });
     }
 
     function gameOver(txt) {
         gameActive = false; clearInterval(gameTimer);
+        playSnd(100, 'sawtooth', 0.8);
         const m = document.getElementById('msg-overlay');
         m.innerText = txt; m.style.color = "var(--danger)"; m.style.display = 'block';
         setTimeout(() => { m.style.display = 'none'; desistir(); }, 2000);
@@ -155,19 +185,47 @@
     function desistir() {
         gameActive = false; clearInterval(gameTimer);
         document.getElementById('ui').style.display = 'none';
+        document.getElementById('quiz-modal').style.display = 'none';
         document.getElementById('btn-desistir').style.display = 'none';
         document.getElementById('modal').style.display = 'flex';
         renderTabs(); updateMenu();
+    }
+
+    function showQuiz() {
+        gameActive = false; clearInterval(gameTimer);
+        const d = districts[level];
+        const q = d.quiz[0];
+        document.getElementById('q-question').innerText = q.q;
+        const opts = document.getElementById('q-options');
+        opts.innerHTML = "";
+        q.o.forEach((opt, i) => {
+            const b = document.createElement('button');
+            b.className = "btn-main";
+            b.innerText = opt;
+            b.onclick = () => {
+                if(i === q.a) {
+                    playSnd(800, 'sine', 0.5);
+                    const m = document.getElementById('msg-overlay');
+                    m.innerText = "EXCELENTE!"; m.style.color = "var(--success)"; m.style.display = 'block';
+                    setTimeout(() => { m.style.display = 'none'; level = (level + 1) % districts.length; desistir(); }, 1500);
+                } else {
+                    document.getElementById('quiz-modal').style.display = 'none';
+                    gameOver("OPS! TENTE NOVAMENTE.");
+                }
+            };
+            opts.appendChild(b);
+        });
+        document.getElementById('quiz-modal').style.display = 'flex';
     }
 
     function loop() {
         if(gameActive) {
             const d = districts[level];
             ctx.fillStyle = d.bg; ctx.fillRect(0,0,canvas.width, canvas.height);
-            ctx.fillStyle = d.gr; ctx.fillRect(0, canvas.height*0.9, canvas.width, canvas.height*0.1);
+            ctx.fillStyle = d.gr; ctx.fillRect(0, canvas.height*0.88, canvas.width, canvas.height*0.12);
             
-            ctx.fillStyle = "rgba(255,255,255,0.9)";
-            ctx.beginPath(); ctx.arc(player.x, player.y, 25, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "rgba(255,255,255,0.8)"; ctx.beginPath(); ctx.arc(player.x, player.y, 25, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle = "var(--gold)"; ctx.lineWidth = 3; ctx.stroke();
 
             for(let i = items.length - 1; i >= 0; i--) {
                 let it = items[i]; it.y += it.s;
@@ -177,16 +235,14 @@
                 if(Math.hypot(player.x - it.x, player.y - it.y) < 45) {
                     if(it.isG) { 
                         score++; 
+                        playSnd(500 + score*20, 'sine', 0.1); 
                     } else { 
-                        score = Math.max(0, score - 1);
+                        score = Math.max(0, score - 2); playSnd(150, 'sawtooth', 0.2);
+                        document.getElementById('damage-overlay').style.display='block'; 
+                        setTimeout(()=>document.getElementById('damage-overlay').style.display='none', 80); 
                     }
                     items.splice(i, 1); spawn(); updateUI();
-                    if(score >= 10) { 
-                        gameActive = false;
-                        const m = document.getElementById('msg-overlay');
-                        m.innerText = "MUITO BEM!"; m.style.color = "var(--success)"; m.style.display = "block";
-                        setTimeout(() => { m.style.display = "none"; desistir(); }, 1500);
-                    }
+                    if(score >= 10) showQuiz();
                 } else if(it.y > canvas.height + 50) { items.splice(i, 1); spawn(); }
             }
         }
@@ -194,7 +250,7 @@
     }
 
     function updateUI() {
-        document.getElementById('txt-target').innerText = `${score}/10`;
+        document.getElementById('txt-target').innerText = `${score} / 10`;
         document.getElementById('txt-time').innerText = timeLeft + "s";
         document.getElementById('txt-loc').innerText = districts[level].name;
     }
